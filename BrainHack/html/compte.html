@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - BrainHack</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>BrainHack</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="minijeux.html" class="nav-link">Mini-Jeux</a></li>
+                <li><a href="compte.html" class="nav-link active">Compte</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Account Section -->
+    <section class="account-section">
+        <!-- Login View -->
+        <div id="loginView" class="auth-container">
+            <div class="auth-card">
+                <h2>Connexion</h2>
+                <p class="subtitle">Bienvenue sur BrainHack</p>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="votre@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Connexion</button>
+                </form>
+                
+                <div class="auth-divider">ou</div>
+                
+                <button class="btn btn-secondary btn-full" onclick="switchToRegister()">
+                    Créer un compte
+                </button>
+                
+                <p class="auth-footer">
+                    Pas encore de compte ? <a href="#" onclick="switchToRegister(); return false;">S'inscrire</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Register View -->
+        <div id="registerView" class="auth-container" style="display: none;">
+            <div class="auth-card">
+                <h2>Inscription</h2>
+                <p class="subtitle">Rejoignez notre communauté</p>
+                
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="registerName">Nom d'utilisateur</label>
+                        <input type="text" id="registerName" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" placeholder="votre@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Mot de passe</label>
+                        <input type="password" id="registerPassword" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirm">Confirmer le mot de passe</label>
+                        <input type="password" id="registerConfirm" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">S'inscrire</button>
+                </form>
+                
+                <p class="auth-footer">
+                    Déjà un compte ? <a href="#" onclick="switchToLogin(); return false;">Se connecter</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profileView" class="profile-container" style="display: none;">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="40" r="20" fill="currentColor"/>
+                            <path d="M 20 80 Q 20 60 50 60 Q 80 60 80 80" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName"></h2>
+                        <p class="profile-role">Apprenti Expert</p>
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="gamesPlayed">0</span>
+                        <span class="stat-label">Jeux joués</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="totalScore">0</span>
+                        <span class="stat-label">Points totaux</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="accuracy">0%</span>
+                        <span class="stat-label">Précision</span>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>Vos Réalisations</h3>
+                    <div class="achievements-grid">
+                        <div class="achievement">
+                            <div class="achievement-icon">🎯</div>
+                            <p>Premier Quiz</p>
+                        </div>
+                        <div class="achievement">
+                            <div class="achievement-icon">🔍</div>
+                            <p>Détecteur Expert</p>
+                        </div>
+                        <div class="achievement">
+                            <div class="achievement-icon">🎭</div>
+                            <p>Maître Deepfake</p>
+                        </div>
+                        <div class="achievement locked">
+                            <div class="achievement-icon">🏆</div>
+                            <p>Champion</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>Informations Personnelles</h3>
+                    <div class="info-group">
+                        <label>Email</label>
+                        <p id="profileEmail"></p>
+                    </div>
+                    <div class="info-group">
+                        <label>Membre depuis</label>
+                        <p id="memberSince"></p>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn btn-secondary" onclick="editProfile()">Modifier le profil</button>
+                    <button class="btn btn-danger" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile View -->
+        <div id="editView" class="auth-container" style="display: none;">
+            <div class="auth-card">
+                <h2>Modifier le Profil</h2>
+                
+                <form id="editForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="editName">Nom d'utilisateur</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BrainHack</h4>
+                <p>Sensibiliser les jeunes à la désinformation</p>
+            </div>
+            <div class="footer-section">
+                <h4>Liens</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="minijeux.html">Mini-Jeux</a></li>
+                    <li><a href="compte.html">Compte</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 BrainHack. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+</html>
