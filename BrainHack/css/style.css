@@ -75,9 +75,9 @@ body {
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 90%;
     margin: 0 auto;
-    padding: 0.5rem 20px;
+    padding: 0.5rem 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -93,27 +93,27 @@ body {
 }
 
 .logo-icon {
-    width:  250px;
-    height: 100px;
+    width:  200px;
+    height: 80px;
     color: var(--secondary);
     overflow: hidden;
 }
 
 .logo-img {
     width: 100%;
-    height: 100%;
+    height: 120%;
     object-fit: contain;
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 4rem;
 }
 
 .nav-link {
     text-decoration: none;
     color: var(--text-dark);
-    font-weight: 500;
+    font-weight: 400;
     transition: color 0.3s ease;
     position: relative;
 }
@@ -208,6 +208,7 @@ body {
     opacity: 0.5;
 }
 
+
 /* ============================================
    HERO SECTION (ACCUEIL)
    ============================================ */
@@ -245,11 +246,10 @@ body {
         0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* CORRECTION : hero-circuit au lieu de bg-circuit */
 .bg-gamepad, .hero-circuit {
     max-width: 500px;
     width: 90%;
-    opacity: 0.1;
+    opacity: 0.8;
     filter: brightness(1.5);
 }
 
