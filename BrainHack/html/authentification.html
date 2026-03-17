@@ -44,45 +44,69 @@
             </button>
         </div>
     </nav>
-
-
-    <main class="account-page">
-        <div class="container">
-            <section class="profile-section" id="profileSection">
-                <h1 class="welcome-title">
-                    Bonjour, <span class="user-role">Élève</span> <span class="user-name">Lucas</span>
-                </h1>
-                
-                <div class="profile-avatar">
-                    <div class="avatar-circle">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                    </div>
-                    <p class="pseudo-text">Pseudo</p>
+    
+            <!-- Section Auth (affichée quand l'utilisateur est déconnecté) -->
+            <section class="auth-section" id="authSection">
+                <div class="auth-toggle">
+                    <button class="btn btn-outline" id="showLogin">Connectez-vous</button>
                 </div>
                 
-                <div class="medals-section">
-                    <h2>Vos médailles</h2>
-                    <div class="medals-grid">
-                        <div class="medal-item">
-                            <span class="medal-icon">👑</span>
-                        </div>
-                        <div class="medal-item">
-                            <span class="medal-icon">👑</span>
-                        </div>
-                        <div class="medal-item">
-                            <span class="medal-icon">👑</span>
-                        </div>
-                    </div>
+                <div class="auth-toggle-question">
+                    <button class="btn btn-text" id="showRegisterQuestion">Êtes-vous inscrit ?</button>
                 </div>
-                
-                <button class="btn btn-secondary" id="logoutBtn">Déconnexion</button>
+
+                <!-- Formulaire d'Inscription -->
+                <div class="auth-form-container" id="registerForm">
+                    <h2 class="auth-title">Inscription</h2>
+                    <form class="auth-form" id="registerFormElement">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Votre pseudo" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-input" placeholder="Votre adresse mail" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Votre rôle" required>
+                        </div>
+                        <div class="form-group role-selection">
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="eleve" checked>
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Élève</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="role" value="professeur">
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Professeur</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-input" placeholder="Votre mot de passe" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">S'inscrire</button>
+                    </form>
+                </div>
+
+                <!-- Formulaire de Connexion -->
+                <div class="auth-form-container hidden" id="loginForm">
+                    <h2 class="auth-title">Connexion</h2>
+                    <form class="auth-form" id="loginFormElement">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Votre pseudo ou adresse mail" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-input" placeholder="Votre mot de passe" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
+                        <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                    </form>
+                </div>
             </section>
+
         </div>
     </main>
 
-        <!-- Footer -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-wave">
             <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
