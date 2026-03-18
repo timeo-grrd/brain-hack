@@ -1,5 +1,5 @@
 # Local API secrets (do not commit)
-BrainHack/api ia/api-ia-config.local.js
+python_games/api_ia/api-ia-config.local.js
 
 # Dependencies
 node_modules/

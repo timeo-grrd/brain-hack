@@ -1,0 +1,410 @@
+﻿<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nos mini-jeux - BrainHack</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">
+            <img
+              src="../assets/logo.png"
+              alt="Logo BrainHack"
+              class="logo-img"
+            />
+          </div>
+        </a>
+
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Accueil</a>
+          <a href="games.html" class="nav-link">Mini-jeux</a>
+          <a href="../api_ia/api-ia-bouton.html" class="nav-link"
+            >Vérifier une image</a
+          >
+          <a href="Apropos.html" class="nav-link">À propos</a>
+        </div>
+
+        <div class="nav-actions">
+          <a
+            href="authentification.html?mode=login"
+            class="btn btn-outline-nav"
+          >
+            Connexion
+          </a>
+          <a href="authentification.html?mode=register" class="btn btn-primary">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            S'inscrire
+          </a>
+        </div>
+
+        <button class="mobile-menu-btn" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section Mini-jeux -->
+    <section class="hero hero-games">
+      <div class="hero-bg">
+        <svg
+          class="gamepad-bg"
+          viewBox="0 0 400 250"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <linearGradient
+              id="gamepadGrad"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                style="stop-color: #a855f7; stop-opacity: 0.25"
+              />
+              <stop
+                offset="100%"
+                style="stop-color: #6366f1; stop-opacity: 0.15"
+              />
+            </linearGradient>
+          </defs>
+          <path
+            d="M80 120 C80 80 120 60 160 60 L240 60 C280 60 320 80 320 120 L320 180 C320 220 280 240 240 240 L160 240 C120 240 80 220 80 180 Z"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="3"
+          />
+          <circle
+            cx="130"
+            cy="140"
+            r="15"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="110"
+            cy="160"
+            r="15"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="150"
+            cy="160"
+            r="15"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="130"
+            cy="180"
+            r="15"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="270"
+            cy="150"
+            r="12"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="300"
+            cy="130"
+            r="12"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle
+            cx="300"
+            cy="170"
+            r="12"
+            fill="none"
+            stroke="url(#gamepadGrad)"
+            stroke-width="2"
+          />
+          <circle cx="140" cy="130" r="8" fill="url(#gamepadGrad)" />
+          <circle cx="260" cy="190" r="8" fill="url(#gamepadGrad)" />
+        </svg>
+      </div>
+      <div class="container">
+        <h1 class="hero-title">Nos mini-jeux</h1>
+      </div>
+    </section>
+
+    <!-- Section Jeux -->
+    <section class="games-section">
+      <div class="container">
+        <!-- Jeu 1 : Différenciation d'images -->
+        <div class="game-card" id="real-vs-ai-card">
+          <p class="game-subtitle" id="real-vs-ai-subtitle">
+            Différenciation entre les images générées ou non ?
+          </p>
+          <div class="game-preview image-quiz-preview">
+            <div class="quiz-header">
+              <button class="close-btn">×</button>
+              <h3>Différenciation entre les images générées ou non</h3>
+              <div class="timer">30</div>
+            </div>
+            <div class="quiz-image-container">
+              <img
+                src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop"
+                alt="Rue à différencier"
+              />
+              <div class="quiz-overlay">
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                  <span>00:01</span>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-buttons">
+              <button class="quiz-btn btn-ai">Générée par l'IA</button>
+              <button class="quiz-btn btn-real">Photographie réelle</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jeu 2 : Timeline Histoire IA -->
+        <div class="game-card" id="ai-history-card">
+          <p class="game-subtitle" id="ai-history-subtitle">
+            L'histoire de l'intelligence artificielle
+          </p>
+          <div class="game-preview timeline-preview">
+            <h3 class="timeline-title">
+              L'histoire de l'intelligence artificielle
+            </h3>
+            <div class="timeline-container">
+              <div class="timeline-line"></div>
+
+              <!-- Points de la timeline -->
+              <div class="timeline-point" style="left: 5%; top: 20%">
+                <div class="point-icon">🤖</div>
+                <span class="point-year">1950</span>
+              </div>
+
+              <div class="timeline-point" style="left: 15%; top: 60%">
+                <div class="point-icon">💻</div>
+                <span class="point-year">1960</span>
+              </div>
+
+              <div class="timeline-point" style="left: 30%; top: 30%">
+                <div class="point-icon">🧠</div>
+                <span class="point-year">1970</span>
+              </div>
+
+              <div class="timeline-point" style="left: 45%; top: 70%">
+                <div class="point-icon">📱</div>
+                <span class="point-year">1980</span>
+              </div>
+
+              <div class="timeline-point" style="left: 60%; top: 25%">
+                <div class="point-icon">🌐</div>
+                <span class="point-year">1990</span>
+              </div>
+
+              <div class="timeline-point" style="left: 75%; top: 65%">
+                <div class="point-icon">🎯</div>
+                <span class="point-year">2000</span>
+              </div>
+
+              <div class="timeline-point" style="left: 90%; top: 40%">
+                <div class="point-icon">⚡</div>
+                <span class="point-year">2020</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jeu 3 : Ball Blast -->
+        <div class="game-card" id="ball-blast-card">
+          <p class="game-subtitle" id="ball-blast-subtitle">
+            Ball Blast ludique
+          </p>
+          <div class="game-preview ball-blast-preview">
+            <div class="game-header">
+              <div class="score">Score: 1540</div>
+              <div class="game-title">BALL BLAST</div>
+              <button class="pause-btn">❚❚</button>
+            </div>
+            <div class="game-area">
+              <!-- Balles -->
+              <div class="ball ball-red" style="left: 20%; top: 30%">
+                <span>AI</span>
+                <span class="ball-sub">Paris</span>
+              </div>
+              <div class="ball ball-blue" style="left: 60%; top: 20%">
+                <span>6</span>
+                <span class="ball-sub">London</span>
+              </div>
+              <div class="ball ball-yellow" style="left: 40%; top: 15%">
+                <span class="ball-bonus">+</span>
+              </div>
+              <div class="ball ball-orange" style="left: 75%; top: 35%">
+                <span>?</span>
+              </div>
+
+              <!-- Canon -->
+              <div class="cannon">
+                <div class="cannon-barrel"></div>
+                <div class="cannon-base"></div>
+              </div>
+
+              <!-- Projectiles -->
+              <div class="projectile" style="left: 48%; bottom: 80px"></div>
+              <div class="projectile" style="left: 52%; bottom: 120px"></div>
+            </div>
+            <div class="ground"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-wave">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+          <path
+            d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"
+            fill="#a8c6fa"
+          />
+        </svg>
+      </div>
+      <div class="footer-content">
+        <div class="container">
+          <div class="footer-grid">
+            <!-- Brand -->
+            <div class="footer-brand">
+              <a href="index.html" class="logo">
+                <div class="logo-icon">
+                  <img
+                    src="../assets/logo.png"
+                    alt="Logo BrainHack"
+                    class="logo-img"
+                  />
+                </div>
+              </a>
+            </div>
+
+            <!-- Navigation -->
+            <div class="footer-links">
+              <h4>Navigation</h4>
+              <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="games.html">Mini-jeux</a></li>
+                <li>
+                  <a href="../api_ia/api-ia-bouton.html">Vérifier une image</a>
+                </li>
+                <li><a href="Apropos.html">À propos</a></li>
+              </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="footer-links">
+              <h4>Contact</h4>
+              <ul>
+                <li>
+                  <a href="mailto:contact@brainhack.fr">contact@brainhack.fr</a>
+                </li>
+                <li><a href="tel:+33123456789">+33 1 23 45 67 89</a></li>
+                <li>
+                  <a href="Apropos.html">Qui sommes-nous ?</a>
+                </li>
+                <li>
+                  <a href="mentions-legales.html">Mentions légales</a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Newsletter + Réseaux -->
+            <div class="footer-newsletter">
+              <h4>Newsletter</h4>
+              <p class="newsletter-desc">
+                Reçois les dernières actus sur l'IA !
+              </p>
+              <div class="newsletter-form">
+                <input
+                  type="email"
+                  class="newsletter-input"
+                  placeholder="Ton email..."
+                />
+                <button class="btn btn-primary newsletter-btn">OK</button>
+              </div>
+              <h4 style="margin-top: 25px">Suivez-nous</h4>
+              <div class="social-links">
+                <a href="#" aria-label="Facebook">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="social-icon"
+                  >
+                    <path
+                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                    />
+                  </svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="social-icon"
+                  >
+                    <path
+                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bas du footer -->
+          <div class="footer-bottom">
+            <p class="footer-copyright">
+              © 2026 BrainHack. Tous droits réservés.
+            </p>
+            <div class="footer-legal">
+              <a href="mentions-legales.html">Mentions légales</a>
+              <a href="mentions-legales.html">CGU</a>
+              <a href="mentions-legales.html"
+                >Politique de confidentialité</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/games.js"></script>
+  </body>
+</html>
+
