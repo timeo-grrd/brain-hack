@@ -1007,6 +1007,167 @@ body {
 }
 
 /* ============================================
+   MODALE ARTICLE IA
+   ============================================ */
+.ia-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 35, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.ia-modal {
+    width: min(1040px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    border-radius: 20px;
+    background: linear-gradient(155deg, #fcfcff 0%, #eef2ff 100%);
+    color: var(--text-dark);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
+    position: relative;
+    padding: 30px;
+}
+
+.ia-modal-close {
+    position: sticky;
+    top: 0;
+    margin-left: auto;
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+.ia-modal-header {
+    margin-top: 8px;
+    margin-bottom: 24px;
+    padding: 26px;
+    border-radius: 16px;
+    background: linear-gradient(140deg, #e0e7ff 0%, #ddd6fe 100%);
+}
+
+.ia-modal-header h2 {
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    margin-bottom: 14px;
+}
+
+.ia-modal-header p {
+    color: #312e81;
+    margin-top: 10px;
+}
+
+.ia-modal-body {
+    display: grid;
+    gap: 18px;
+}
+
+.ia-section {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+}
+
+.ia-section h3 {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    color: #312e81;
+}
+
+.ia-section p {
+    color: #334155;
+}
+
+.ia-list {
+    margin: 10px 0 0 18px;
+    color: #334155;
+}
+
+.ia-list li {
+    margin-bottom: 8px;
+}
+
+.ia-note-grid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ia-note {
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #dbeafe;
+}
+
+.ia-note h4 {
+    margin-bottom: 8px;
+    color: #1d4ed8;
+}
+
+.ia-note-old {
+    background: linear-gradient(160deg, #f8fafc 0%, #eff6ff 100%);
+}
+
+.ia-note-new {
+    background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 100%);
+}
+
+.ia-highlight {
+    margin: 12px 0;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 14px;
+    border-radius: 8px;
+}
+
+.ia-table-wrap {
+    margin-top: 12px;
+    overflow-x: auto;
+}
+
+.ia-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.ia-table th,
+.ia-table td {
+    border: 1px solid #cbd5e1;
+    text-align: left;
+    vertical-align: top;
+    padding: 12px;
+}
+
+.ia-table th {
+    background: #eef2ff;
+    color: #312e81;
+}
+
+.ia-summary {
+    background: linear-gradient(150deg, #111827 0%, #1f2937 100%);
+    border: none;
+}
+
+.ia-summary h3,
+.ia-summary p {
+    color: #e2e8f0;
+}
+
+/* ============================================
    ANIMATIONS
    ============================================ */
 @keyframes fadeInUp {
@@ -1154,6 +1315,29 @@ body {
 
     .social-links {
         justify-content: center;
+    }
+
+    .ia-modal-overlay {
+        padding: 12px;
+    }
+
+    .ia-modal {
+        max-height: calc(100vh - 24px);
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .ia-modal-header {
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+    .ia-section {
+        padding: 16px;
+    }
+
+    .ia-note-grid {
+        grid-template-columns: 1fr;
     }
 }
 
