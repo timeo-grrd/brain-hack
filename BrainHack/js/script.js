@@ -1,5 +1,242 @@
+// Suivi centralise de la progression eleve (articles + mini-jeux).
+(function () {
+    const STORAGE_KEY = 'brainhack_student_progress_v1';
+
+    function getStorage() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function setStorage(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getActiveUser() {
+        try {
+            const currentUserRaw = localStorage.getItem('currentUser');
+            if (currentUserRaw) {
+                return JSON.parse(currentUserRaw);
+            }
+
+            const userDataRaw = localStorage.getItem('userData');
+            if (userDataRaw) {
+                return JSON.parse(userDataRaw);
+            }
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
+    function getUserKey(user) {
+        if (!user || typeof user !== 'object') {
+            return null;
+        }
+
+        if (user.id !== undefined && user.id !== null) {
+            return `id:${user.id}`;
+        }
+
+        if (user.idCompte) {
+            return `id:${user.idCompte}`;
+        }
+
+        if (user.email) {
+            return `email:${String(user.email).toLowerCase()}`;
+        }
+
+        if (user.pseudo) {
+            return `pseudo:${String(user.pseudo).toLowerCase()}`;
+        }
+
+        return null;
+    }
+
+    function ensureUserProgress(user) {
+        const userKey = getUserKey(user);
+        if (!userKey) {
+            return null;
+        }
+
+        const storage = getStorage();
+        if (!storage[userKey]) {
+            storage[userKey] = {
+                articlesRead: [],
+                miniGames: {},
+                totalPoints: 0,
+                gamesPlayed: 0,
+                updatedAt: new Date().toISOString()
+            };
+            setStorage(storage);
+        }
+
+        return { storage, userKey, progress: storage[userKey] };
+    }
+
+    function trackArticleRead(articleId) {
+        const user = getActiveUser();
+        const state = ensureUserProgress(user);
+        if (!state || !articleId) {
+            return;
+        }
+
+        const cleanId = String(articleId).trim();
+        if (!cleanId) {
+            return;
+        }
+
+        if (!Array.isArray(state.progress.articlesRead)) {
+            state.progress.articlesRead = [];
+        }
+
+        if (!state.progress.articlesRead.includes(cleanId)) {
+            state.progress.articlesRead.push(cleanId);
+            state.progress.updatedAt = new Date().toISOString();
+            setStorage(state.storage);
+        }
+    }
+
+    function trackMiniGameScore(gameKey, score, maxScore) {
+        const user = getActiveUser();
+        const state = ensureUserProgress(user);
+        if (!state || !gameKey) {
+            return;
+        }
+
+        const numericScore = Math.max(0, Number(score) || 0);
+        const numericMax = Math.max(0, Number(maxScore) || 0);
+
+        if (!state.progress.miniGames || typeof state.progress.miniGames !== 'object') {
+            state.progress.miniGames = {};
+        }
+
+        const previous = state.progress.miniGames[gameKey] || {
+            bestScore: 0,
+            lastScore: 0,
+            maxScore: numericMax,
+            attempts: 0,
+            totalPoints: 0
+        };
+
+        const updated = {
+            bestScore: Math.max(previous.bestScore || 0, numericScore),
+            lastScore: numericScore,
+            maxScore: numericMax || previous.maxScore || 0,
+            attempts: (previous.attempts || 0) + 1,
+            totalPoints: (previous.totalPoints || 0) + numericScore
+        };
+
+        state.progress.miniGames[gameKey] = updated;
+        state.progress.gamesPlayed = (state.progress.gamesPlayed || 0) + 1;
+        state.progress.totalPoints = (state.progress.totalPoints || 0) + numericScore;
+        state.progress.updatedAt = new Date().toISOString();
+        setStorage(state.storage);
+    }
+
+    function getProgressForUser(user) {
+        const userKey = getUserKey(user);
+        if (!userKey) {
+            return null;
+        }
+
+        const storage = getStorage();
+        return storage[userKey] || null;
+    }
+
+    window.BrainHackProgress = {
+        trackArticleRead,
+        trackMiniGameScore,
+        getProgressForUser
+    };
+})();
+
 // Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', function() {
+
+    function getHeaderAccountPath() {
+        const normalizedPath = window.location.pathname.toLowerCase();
+        const onApiIaPage = normalizedPath.includes('/api%20ia/') || normalizedPath.includes('/api ia/');
+        return onApiIaPage ? '../html/compte.html' : 'compte.html';
+    }
+
+    function getConnectedUser() {
+        try {
+            const currentUserRaw = localStorage.getItem('currentUser');
+            if (currentUserRaw) {
+                const parsed = JSON.parse(currentUserRaw);
+                if (parsed && typeof parsed === 'object') {
+                    return parsed;
+                }
+            }
+
+            const userDataRaw = localStorage.getItem('userData');
+            if (userDataRaw && localStorage.getItem('isLoggedIn') === 'true') {
+                const parsed = JSON.parse(userDataRaw);
+                if (parsed && typeof parsed === 'object') {
+                    return parsed;
+                }
+            }
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
+    function applyHeaderSessionState() {
+        const connectedUser = getConnectedUser();
+        if (!connectedUser) {
+            return;
+        }
+
+        const navActions = document.querySelector('.nav-actions');
+        if (!navActions) {
+            return;
+        }
+
+        const links = navActions.querySelectorAll('a');
+        const displayName = connectedUser.name || connectedUser.pseudo || 'Utilisateur';
+        const accountPath = getHeaderAccountPath();
+
+        if (links[0]) {
+            links[0].href = accountPath;
+            links[0].textContent = 'Mon compte';
+        }
+
+        if (links[1]) {
+            links[1].href = '#';
+            links[1].classList.remove('btn-primary');
+            links[1].classList.add('btn-outline-nav');
+            const icon = links[1].querySelector('svg');
+            if (icon) {
+                icon.remove();
+            }
+            links[1].textContent = 'Déconnexion';
+            links[1].addEventListener('click', function (event) {
+                event.preventDefault();
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userData');
+                window.location.href = getHeaderAccountPath().replace('compte.html', 'authentification.html?mode=login');
+            });
+        }
+
+        let sessionBadge = navActions.querySelector('.header-session-badge');
+        if (!sessionBadge) {
+            sessionBadge = document.createElement('span');
+            sessionBadge.className = 'header-session-badge';
+            navActions.appendChild(sessionBadge);
+        }
+        sessionBadge.textContent = `Connecté: ${displayName}`;
+    }
+
+    applyHeaderSessionState();
 
     function openIaArticleModal() {
         const existingModal = document.querySelector('.ia-modal-overlay');
@@ -1423,6 +1660,17 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.transform = 'translateY(30px)';
         card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
         observer.observe(card);
+    });
+
+    // Suivi lecture des articles pour le dashboard eleve.
+    articleCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const fallbackTitle = card.querySelector('h2, h3')?.textContent || 'article';
+            const articleId = card.id || fallbackTitle.toLowerCase().replace(/\s+/g, '-').slice(0, 60);
+            if (window.BrainHackProgress) {
+                window.BrainHackProgress.trackArticleRead(articleId);
+            }
+        });
     });
     
     // Effet de parallaxe subtil sur le hero

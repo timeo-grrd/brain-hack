@@ -230,6 +230,19 @@ body {
     gap: 10px;
 }
 
+.header-session-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    color: #3730a3;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* Mobile Menu Button */
 .mobile-menu-btn {
     display: none;
@@ -289,6 +302,18 @@ body {
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    transform: scale(1.18);
+}
+
+.hero-bg::before {
+    content: '';
+    position: absolute;
+    width: min(72vw, 760px);
+    height: min(72vw, 760px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.42) 0%, rgba(168, 85, 247, 0.24) 40%, rgba(224, 231, 255, 0) 75%);
+    filter: blur(12px);
+    animation: heroGlowPulse 5.5s ease-in-out infinite;
 }
 
 .hero-title {
@@ -311,17 +336,41 @@ body {
 }
 
 .bg-gamepad, .hero-circuit {
-    max-width: 500px;
-    width: 90%;
-    opacity: 0.8;
-    filter: brightness(1.5);
+    max-width: 680px;
+    width: min(96%, 680px);
+    opacity: 1;
+    filter: brightness(1.75) contrast(1.2) saturate(1.15)
+        drop-shadow(0 0 28px rgba(99, 102, 241, 0.45))
+        drop-shadow(0 0 56px rgba(168, 85, 247, 0.28))
+        drop-shadow(0 0 86px rgba(99, 102, 241, 0.38));
+    animation: heroBrainPulse 4.2s ease-in-out infinite;
+}
+
+@keyframes heroGlowPulse {
+    0%, 100% {
+        opacity: 0.68;
+        transform: scale(0.94);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
+
+@keyframes heroBrainPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.06);
+    }
 }
 
 /* ============================================
    HERO SECTION JEUX
    ============================================ */
 .hero-games {
-    padding: 140px 0 60px;
+    padding: 185px 0 60px;
     min-height: auto;
 }
 
@@ -428,6 +477,9 @@ body {
     transition: all 0.3s ease;
     cursor: pointer;
     animation: fadeInUp 0.6s ease forwards;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .article-card:hover {
@@ -464,6 +516,9 @@ body {
 
 .article-content {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .article-title {
@@ -472,6 +527,7 @@ body {
     font-weight: 500;
     line-height: 1.5;
     margin-bottom: 15px;
+    min-height: calc(1.5em * 2);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -481,6 +537,7 @@ body {
 .article-stats {
     display: flex;
     gap: 15px;
+    margin-top: auto;
 }
 
 .stat {
@@ -1872,6 +1929,159 @@ body {
     box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
 }
 
+.student-dashboard {
+    margin: 0 auto 34px;
+    max-width: 920px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 14px 36px rgba(79, 70, 229, 0.14);
+}
+
+.student-dashboard h2 {
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+    color: #312e81;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.dashboard-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: #4338ca;
+}
+
+.dashboard-card p {
+    font-size: 1rem;
+    color: #1f2937;
+}
+
+.dashboard-progress {
+    margin-bottom: 14px;
+}
+
+.dashboard-progress-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.92rem;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.dashboard-progress-track {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.35);
+    overflow: hidden;
+}
+
+.dashboard-progress-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #14b8a6 0%, #22c55e 100%);
+    transition: width 0.4s ease;
+}
+
+.dashboard-articles-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+}
+
+.dashboard-article-item {
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.dashboard-article-item.done {
+    color: #0f766e;
+    font-weight: 600;
+}
+
+.professor-panel {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 12px 32px rgba(67, 56, 202, 0.12);
+    margin-bottom: 28px;
+}
+
+.professor-badge-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.professor-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.professor-email {
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.professor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.professor-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.professor-card h3 {
+    font-size: 1.05rem;
+    color: #312e81;
+}
+
+.professor-card p {
+    font-size: 0.92rem;
+    color: var(--text-dark);
+    line-height: 1.45;
+    min-height: 62px;
+}
+
+.professor-card .btn {
+    align-self: flex-start;
+}
+
 .auth-section {
     max-width: 450px;
     margin: 0 auto;
@@ -2046,7 +2256,7 @@ body {
 
     .hero { padding: 100px 0 40px; }
     .hero-title { font-size: 1.75rem; }
-    .hero-games { padding: 120px 0 40px; }
+    .hero-games { padding: 150px 0 40px; }
     .gamepad-bg { width: 300px; height: 250px; }
     .featured-image { height: 220px; }
     .featured-title { font-size: 1.25rem; }
@@ -2077,6 +2287,9 @@ body {
     .medals-grid { gap: 25px; }
     .medal-item { width: 60px; height: 60px; }
     .medal-icon { font-size: 1.6rem; }
+    .dashboard-cards { grid-template-columns: 1fr; }
+    .dashboard-articles-list { grid-template-columns: 1fr; }
+    .professor-grid { grid-template-columns: 1fr; }
     .auth-form-container { padding: 25px 20px; }
     .role-selection { flex-direction: column; gap: 12px; }
 

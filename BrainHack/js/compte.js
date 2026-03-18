@@ -7,14 +7,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const showLoginBtn = document.getElementById('showLogin');
     const showRegisterQuestionBtn = document.getElementById('showRegisterQuestion');
     const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnProfessor = document.getElementById('logoutBtnProfessor');
     const loginFormElement = document.getElementById('loginFormElement');
     const registerFormElement = document.getElementById('registerFormElement');
+    const professorSection = document.getElementById('professorSection');
+    const studentDashboard = document.getElementById('studentDashboard');
     const onAuthPage = Boolean(authSection);
     const onAccountPage = Boolean(profileSection);
     const USERS_KEY = 'users';
     const CURRENT_USER_KEY = 'currentUser';
+    const STUDENT_PROGRESS_KEY = 'brainhack_student_progress_v1';
     const AUTH_PAGE = './authentification.html';
     const ACCOUNT_PAGE = './compte.html';
+    const KNOWN_ARTICLES = [
+        'ia-featured-card',
+        'phone-intelligence-card',
+        'chatgpt-lies-card',
+        'manipulation-online-card',
+        'deepfake-detect-card',
+        'ai-cheats-games-card',
+        'streamer-fake-video-card',
+        'homework-ai-card',
+        'future-job-card',
+        'ai-replace-humanity-card'
+    ];
 
     // Vérifier si l'utilisateur est connecté
     checkAuthStatus();
@@ -30,6 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
+    }
+
+    if (logoutBtnProfessor) {
+        logoutBtnProfessor.addEventListener('click', logout);
     }
 
     if (loginFormElement) {
@@ -69,8 +89,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (profileSection) profileSection.classList.remove('hidden');
+        const isProfessor = (userData.role || '').toLowerCase() === 'professeur';
+
+        if (profileSection) {
+            profileSection.classList.toggle('hidden', isProfessor);
+        }
+        if (professorSection) {
+            professorSection.classList.toggle('hidden', !isProfessor);
+        }
         if (authSection) authSection.classList.add('hidden');
+
+        if (isProfessor) {
+            updateProfessorDisplay(userData);
+            return;
+        }
 
         // Mettre à jour les informations du profil
         const userNameElement = document.querySelector('.user-name');
@@ -91,6 +123,116 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Mettre à jour les médailles débloquées
         updateMedals(userData.medals || []);
+        renderStudentDashboard(userData);
+    }
+
+    function updateProfessorDisplay(userData) {
+        const professorNameElement = document.querySelector('.prof-name');
+        const professorEmailElement = document.querySelector('.professor-email');
+
+        if (professorNameElement) {
+            professorNameElement.textContent = userData.name || userData.pseudo || 'Professeur';
+        }
+
+        if (professorEmailElement) {
+            professorEmailElement.textContent = userData.email || 'professeur@brainhack.fr';
+        }
+    }
+
+    function renderStudentDashboard(userData) {
+        if (!studentDashboard) {
+            return;
+        }
+
+        const progress = getStudentProgress(userData);
+        const articlesRead = Array.isArray(progress.articlesRead) ? progress.articlesRead : [];
+        const uniqueArticlesRead = Array.from(new Set(articlesRead));
+        const totalArticles = KNOWN_ARTICLES.length;
+        const readCount = uniqueArticlesRead.length;
+        const points = Number(progress.totalPoints || 0);
+        const gamesPlayed = Number(progress.gamesPlayed || 0);
+
+        const articleWeight = totalArticles > 0 ? (readCount / totalArticles) * 60 : 0;
+        const gamesWeight = Math.min(gamesPlayed, 10) / 10 * 40;
+        const completion = Math.round(Math.min(100, articleWeight + gamesWeight));
+
+        const readElement = document.getElementById('dashboardArticlesRead');
+        const totalElement = document.getElementById('dashboardArticlesTotal');
+        const pointsElement = document.getElementById('dashboardPoints');
+        const gamesElement = document.getElementById('dashboardGamesPlayed');
+        const completionTextElement = document.getElementById('dashboardCompletionText');
+        const completionBarElement = document.getElementById('dashboardCompletionBar');
+        const articlesListElement = document.getElementById('dashboardArticlesList');
+
+        if (readElement) readElement.textContent = String(readCount);
+        if (totalElement) totalElement.textContent = String(totalArticles);
+        if (pointsElement) pointsElement.textContent = String(points);
+        if (gamesElement) gamesElement.textContent = String(gamesPlayed);
+        if (completionTextElement) completionTextElement.textContent = `${completion}%`;
+        if (completionBarElement) completionBarElement.style.width = `${completion}%`;
+
+        if (articlesListElement) {
+            const topArticles = KNOWN_ARTICLES.slice(0, 5);
+            articlesListElement.innerHTML = topArticles.map(articleId => {
+                const isRead = uniqueArticlesRead.includes(articleId);
+                const label = prettifyArticleName(articleId);
+                return `<p class="dashboard-article-item ${isRead ? 'done' : ''}">${isRead ? '✓' : '○'} ${label}</p>`;
+            }).join('');
+        }
+    }
+
+    function prettifyArticleName(articleId) {
+        return articleId
+            .replace(/-card$/i, '')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function getStudentProgress(userData) {
+        if (!userData) {
+            return {};
+        }
+
+        try {
+            const raw = localStorage.getItem(STUDENT_PROGRESS_KEY);
+            if (!raw) {
+                return {};
+            }
+
+            const storage = JSON.parse(raw);
+            if (!storage || typeof storage !== 'object') {
+                return {};
+            }
+
+            const userKey = getProgressUserKey(userData);
+            if (!userKey || !storage[userKey]) {
+                return {};
+            }
+
+            return storage[userKey];
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function getProgressUserKey(userData) {
+        if (userData.id !== undefined && userData.id !== null) {
+            return `id:${userData.id}`;
+        }
+
+        if (userData.idCompte) {
+            return `id:${userData.idCompte}`;
+        }
+
+        if (userData.email) {
+            return `email:${String(userData.email).toLowerCase()}`;
+        }
+
+        if (userData.pseudo) {
+            return `pseudo:${String(userData.pseudo).toLowerCase()}`;
+        }
+
+        return null;
     }
 
     function showAuth() {

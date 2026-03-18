@@ -97,7 +97,101 @@
             </div>
           </div>
 
+          <div class="student-dashboard" id="studentDashboard">
+            <h2>Tableau de bord eleve</h2>
+
+            <div class="dashboard-cards">
+              <article class="dashboard-card">
+                <h3>Articles lus</h3>
+                <p>
+                  <strong id="dashboardArticlesRead">0</strong>
+                  / <span id="dashboardArticlesTotal">10</span>
+                </p>
+              </article>
+
+              <article class="dashboard-card">
+                <h3>Points mini-jeux</h3>
+                <p><strong id="dashboardPoints">0</strong> points</p>
+              </article>
+
+              <article class="dashboard-card">
+                <h3>Parties jouees</h3>
+                <p><strong id="dashboardGamesPlayed">0</strong> sessions</p>
+              </article>
+            </div>
+
+            <div class="dashboard-progress">
+              <div class="dashboard-progress-head">
+                <span>Progression globale</span>
+                <span id="dashboardCompletionText">0%</span>
+              </div>
+              <div class="dashboard-progress-track">
+                <div
+                  class="dashboard-progress-fill"
+                  id="dashboardCompletionBar"
+                ></div>
+              </div>
+            </div>
+
+            <div
+              class="dashboard-articles-list"
+              id="dashboardArticlesList"
+            ></div>
+          </div>
+
           <button class="btn btn-secondary" id="logoutBtn">Déconnexion</button>
+        </section>
+
+        <section class="profile-section hidden" id="professorSection">
+          <h1 class="welcome-title">
+            Espace professeur, <span class="prof-name">Enseignant</span>
+          </h1>
+
+          <div class="professor-panel">
+            <div class="professor-badge-row">
+              <span class="professor-badge">Compte professeur</span>
+              <span class="professor-email">prof@example.com</span>
+            </div>
+
+            <div class="professor-grid">
+              <article class="professor-card">
+                <h3>Classe active</h3>
+                <p>
+                  Prépare ton parcours BrainHack et partage-le rapidement avec
+                  tes élèves.
+                </p>
+                <button class="btn btn-primary" type="button">
+                  Créer un parcours
+                </button>
+              </article>
+
+              <article class="professor-card">
+                <h3>Suivi pédagogique</h3>
+                <p>
+                  Visualise la progression et les scores des mini-jeux pour ta
+                  classe.
+                </p>
+                <button class="btn btn-outline" type="button">
+                  Voir les résultats
+                </button>
+              </article>
+
+              <article class="professor-card">
+                <h3>Ressources IA</h3>
+                <p>
+                  Accède aux contenus de sensibilisation pour animer tes
+                  séances.
+                </p>
+                <button class="btn btn-outline" type="button">
+                  Ouvrir les ressources
+                </button>
+              </article>
+            </div>
+          </div>
+
+          <button class="btn btn-secondary" id="logoutBtnProfessor">
+            Déconnexion
+          </button>
         </section>
       </div>
     </main>
@@ -120,7 +214,7 @@
               <a href="/BrainHack/html/index.html" class="logo">
                 <div class="logo-icon">
                   <img
-                    src="/BrainHack/assets/logo.png"
+                    src="../assets/logo.png"
                     alt="Logo BrainHack"
                     class="logo-img"
                   />

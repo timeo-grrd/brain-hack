@@ -198,6 +198,10 @@ function endQuiz() {
         `;
     }
 
+    if (window.BrainHackProgress) {
+        window.BrainHackProgress.trackMiniGameScore('quiz-ia', quizState.score, quizQuestions.length);
+    }
+
     // Mettre à jour les statistiques utilisateur
     if (window.currentUser) {
         updateUserStats('quiz', quizState.score, quizQuestions.length);
@@ -302,6 +306,10 @@ function endDetector() {
             <p>Vous avez obtenu : <strong>${detectState.score}/${detectStatements.length}</strong></p>
             <p>Score : <strong>${percentage}%</strong></p>
         `;
+    }
+
+    if (window.BrainHackProgress) {
+        window.BrainHackProgress.trackMiniGameScore('detecteur-fake-news', detectState.score, detectStatements.length);
     }
 
     // Mettre à jour les statistiques utilisateur
@@ -411,6 +419,10 @@ function endDeepfake() {
             <p>Vous avez obtenu : <strong>${deepfakeState.score}/${deepfakeImages.length}</strong></p>
             <p>Score : <strong>${percentage}%</strong></p>
         `;
+    }
+
+    if (window.BrainHackProgress) {
+        window.BrainHackProgress.trackMiniGameScore('deepfake-check', deepfakeState.score, deepfakeImages.length);
     }
 
     // Mettre à jour les statistiques utilisateur
