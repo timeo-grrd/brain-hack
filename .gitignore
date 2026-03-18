@@ -1,0 +1,8 @@
+# Local API secrets (do not commit)
+BrainHack/api ia/api-ia-config.local.js
+
+# Dependencies
+node_modules/
+
+# Server secrets
+.env

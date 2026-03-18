@@ -1,0 +1,218 @@
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #a855f7;
+  --accent: #ec4899;
+  --bg-gradient-start: #e0e7ff;
+  --bg-gradient-end: #ddd6fe;
+  --text-dark: #1e1b4b;
+  --text-light: #64748b;
+  --white: #ffffff;
+  --shadow: 0 12px 30px rgba(30, 27, 75, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-dark);
+  min-height: 100vh;
+  background: linear-gradient(140deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(99, 102, 241, 0.14), transparent 32%),
+    radial-gradient(circle at 88% 82%, rgba(168, 85, 247, 0.14), transparent 36%);
+  pointer-events: none;
+}
+
+.scan-page {
+  min-height: calc(100vh - 120px);
+  display: grid;
+  place-items: center;
+  padding: 120px 24px 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.scan-card {
+  width: min(760px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+.scan-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.scan-card h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.25;
+}
+
+.scan-subtitle {
+  margin: 10px 0 20px;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: var(--primary-dark);
+  background: rgba(99, 102, 241, 0.1);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+#image-upload {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  background: #f8faff;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+#image-upload::file-selector-button {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  border: none;
+  padding: 9px 12px;
+  margin-right: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bouton-ia {
+  width: 100%;
+  border: none;
+  padding: 13px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.28);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.bouton-ia:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+#message-scan {
+  margin-top: 14px;
+  font-weight: 700;
+  color: #e84118;
+}
+
+.result-card {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.result-title {
+  margin: 0 0 10px;
+  font-size: 1.12rem;
+}
+
+.api-response {
+  margin: 0;
+}
+
+.verdict-line {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.argument-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.argument-list {
+  margin: 0 0 0 18px;
+  padding: 0;
+  color: #334155;
+  line-height: 1.55;
+}
+
+.argument-list li {
+  margin-bottom: 6px;
+}
+
+.rule-line {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--secondary);
+  background: #f6f3ff;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.api-response.verdict-ia .verdict-line {
+  color: #c81e1e;
+}
+
+.api-response.verdict-not-ia .verdict-line {
+  color: #15803d;
+}
+
+.disclaimer {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+@media (max-width: 640px) {
+  .scan-page {
+    padding: 104px 12px 24px;
+  }
+
+  .scan-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .scan-subtitle,
+  .argument-list,
+  .disclaimer,
+  #message-scan {
+    font-size: 0.95rem;
+  }
+}

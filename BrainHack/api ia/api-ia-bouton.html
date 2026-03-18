@@ -3,29 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BrainHack - Ton Certificat</title>
-    <link rel="stylesheet" href="/BrainHack/css/style.css" />
-    <link rel="stylesheet" href="/BrainHack/css/certificat.css" />
+    <title>Verifier une image - BrainHack</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="api-ia-style.css" />
   </head>
   <body>
-    <div class="page-bg">
-      <img src="/BrainHack/assets/cerveauTest.png" alt="" class="bg-circuit" />
-    </div>
+    <div class="page-bg"></div>
 
-    <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
-        <a href="/BrainHack/html/index.html" class="logo">
+        <a href="../html/index.html" class="logo">
           <div class="logo-icon">
             <img
-              src="/BrainHack/assets/logo.png"
+              src="../assets/logo.png"
               alt="Logo BrainHack"
               class="logo-img"
             />
@@ -33,28 +30,18 @@
         </a>
 
         <div class="nav-links">
-          <a href="/BrainHack/html/index.html" class="nav-link">Accueil</a>
-          <a href="/BrainHack/html/index.html#histoire" class="nav-link"
-            >Histoire</a
-          >
-          <a href="/BrainHack/html/games.html" class="nav-link">Mini-jeux</a>
-          <a href="../api%20ia/api-ia-bouton.html" class="nav-link"
-            >Vérifier une image</a
-          >
-          <a href="/BrainHack/html/apropos.html" class="nav-link">À propos</a>
+          <a href="../html/index.html" class="nav-link">Accueil</a>
+          <a href="../html/index.html#histoire" class="nav-link">Histoire</a>
+          <a href="../html/games.html" class="nav-link">Mini-jeux</a>
+          <a href="api-ia-bouton.html" class="nav-link">Vérifier une image</a>
+          <a href="../html/Apropos.html" class="nav-link">À propos</a>
         </div>
 
         <div class="nav-actions">
-          <a
-            href="/BrainHack/html/authentification.html"
-            class="btn btn-outline-nav"
-          >
+          <a href="../html/authentification.html" class="btn btn-outline-nav">
             Connexion
           </a>
-          <a
-            href="/BrainHack/html/authentification.html"
-            class="btn btn-primary"
-          >
+          <a href="../html/authentification.html" class="btn btn-primary">
             <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fill-rule="evenodd"
@@ -74,71 +61,33 @@
       </div>
     </nav>
 
-    <!-- Contenu principal -->
-    <main class="certif-page">
-      <!-- Formulaire -->
-      <div id="formulaire-section" class="certif-formulaire">
-        <h1 class="certif-main-title">Opération BrainHack Terminée !</h1>
-        <p class="certif-subtitle">Récupère ton accréditation officielle :</p>
-        <div class="certif-inputs">
-          <input
-            type="text"
-            id="input-prenom"
-            class="form-input"
-            placeholder="Prénom"
-          />
-          <input
-            type="text"
-            id="input-nom"
-            class="form-input"
-            placeholder="Nom"
-          />
-        </div>
-        <button class="btn btn-primary btn-full" onclick="preparerDiplome()">
-          Générer ma certification 🎓
-        </button>
-      </div>
+    <main class="scan-page">
+      <section class="scan-card">
+        <span class="scan-tag">Analyse forensique</span>
+        <h1>Verifier une image</h1>
+        <p class="scan-subtitle">
+          Upload une image et lance un scan IA pour obtenir un verdict detaille.
+        </p>
 
-      <!-- Zone certificat -->
-      <div id="zone-certificat">
-        <div id="contenu-a-imprimer" class="certificat-design">
-          <div class="bordure-interieure">
-            <div class="certificat-corps">
-              <h1 class="titre-certif">Certification d'Expert</h1>
-              <div class="sous-titre">Enquêteur Anti-IA Niveau 1</div>
-              <p class="texte-intro">
-                Ce document certifie officiellement que :
-              </p>
-              <div id="affichage-nom" class="nom-joueur">PRÉNOM NOM</div>
-              <p class="texte-felicitations">
-                A brillamment terminé toutes les épreuves de l'opération
-                <strong>BrainHack</strong>.<br />
-                Il/Elle a su faire preuve d'un esprit critique exceptionnel pour
-                déjouer<br />
-                les pièges visuels et textuels des Intelligences Artificielles
-                génératives.
-              </p>
-              <div class="score-box">
-                SCORE : <span id="affichage-xp">0</span> XP
-              </div>
-            </div>
-            <div class="certificat-footer">
-              <div class="logo-brainhack">// Projet BrainHack</div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <label for="image-upload" class="upload-label">Choisir une image</label>
+        <input id="image-upload" type="file" accept="image/*" />
 
-      <button
-        id="bouton-pdf"
-        class="btn btn-primary"
-        onclick="telechargerPDF()"
-      >
-        📥 Télécharger en PDF
-      </button>
+        <button id="btn-detective" class="bouton-ia">Lancer le Scan IA</button>
+
+        <p id="message-scan" style="display: none">
+          Analyse des pixels en cours...
+        </p>
+
+        <section id="result-card" class="result-card" style="display: none">
+          <h2 class="result-title">Resultat de l'analyse</h2>
+          <p id="api-response" class="api-response"></p>
+          <p class="disclaimer">
+            Important : cette analyse est une estimation et peut se tromper.
+          </p>
+        </section>
+      </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-wave">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
@@ -151,12 +100,11 @@
       <div class="footer-content">
         <div class="container">
           <div class="footer-grid">
-            <!-- Brand -->
             <div class="footer-brand">
-              <a href="/BrainHack/html/index.html" class="logo">
+              <a href="../html/index.html" class="logo">
                 <div class="logo-icon">
                   <img
-                    src="/BrainHack/assets/logo.png"
+                    src="../assets/logo.png"
                     alt="Logo BrainHack"
                     class="logo-img"
                   />
@@ -164,25 +112,17 @@
               </a>
             </div>
 
-            <!-- Navigation -->
             <div class="footer-links">
               <h4>Navigation</h4>
               <ul>
-                <li><a href="/BrainHack/html/index.html">Accueil</a></li>
-                <li>
-                  <a href="/BrainHack/html/index.html#histoire">Histoire</a>
-                </li>
-                <li><a href="/BrainHack/html/games.html">Mini-jeux</a></li>
-                <li>
-                  <a href="../api%20ia/api-ia-bouton.html"
-                    >Vérifier une image</a
-                  >
-                </li>
-                <li><a href="/BrainHack/html/apropos.html">À propos</a></li>
+                <li><a href="../html/index.html">Accueil</a></li>
+                <li><a href="../html/index.html#histoire">Histoire</a></li>
+                <li><a href="../html/games.html">Mini-jeux</a></li>
+                <li><a href="api-ia-bouton.html">Vérifier une image</a></li>
+                <li><a href="../html/Apropos.html">À propos</a></li>
               </ul>
             </div>
 
-            <!-- Contact -->
             <div class="footer-links">
               <h4>Contact</h4>
               <ul>
@@ -190,18 +130,13 @@
                   <a href="mailto:contact@brainhack.fr">contact@brainhack.fr</a>
                 </li>
                 <li><a href="tel:+33123456789">+33 1 23 45 67 89</a></li>
+                <li><a href="../html/Apropos.html">Qui sommes-nous ?</a></li>
                 <li>
-                  <a href="/BrainHack/html/apropos.html">Qui sommes-nous ?</a>
-                </li>
-                <li>
-                  <a href="/BrainHack/html/mentions-legales.html"
-                    >Mentions légales</a
-                  >
+                  <a href="../html/mentions-legales.html">Mentions légales</a>
                 </li>
               </ul>
             </div>
 
-            <!-- Newsletter + Réseaux -->
             <div class="footer-newsletter">
               <h4>Newsletter</h4>
               <p class="newsletter-desc">
@@ -243,17 +178,14 @@
             </div>
           </div>
 
-          <!-- Bas du footer -->
           <div class="footer-bottom">
             <p class="footer-copyright">
               © 2026 BrainHack. Tous droits réservés.
             </p>
             <div class="footer-legal">
-              <a href="/BrainHack/html/mentions-legales.html"
-                >Mentions légales</a
-              >
-              <a href="/BrainHack/html/mentions-legales.html">CGU</a>
-              <a href="/BrainHack/html/mentions-legales.html"
+              <a href="../html/mentions-legales.html">Mentions légales</a>
+              <a href="../html/mentions-legales.html">CGU</a>
+              <a href="../html/mentions-legales.html"
                 >Politique de confidentialité</a
               >
             </div>
@@ -262,6 +194,9 @@
       </div>
     </footer>
 
-    <script src="/BrainHack/js/certificat.js"></script>
+    <script src="api-ia-config.js"></script>
+    <script src="api-ia-config.local.js" onerror="void 0"></script>
+    <script src="api-ia-script.js"></script>
+    <script src="../js/script.js"></script>
   </body>
 </html>
