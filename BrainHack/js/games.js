@@ -435,3 +435,43 @@ window.startDeepfake = startDeepfake;
 window.nextDeepfake = nextDeepfake;
 window.resetDeepfake = resetDeepfake;
 window.answerDeepfake = answerDeepfake;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const realVsAiCard = document.getElementById('real-vs-ai-card');
+    const aiHistoryCard = document.getElementById('ai-history-card');
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const realVsAiLocalUrl = 'http://localhost:8501';
+    const realVsAiHostedUrl = 'https://brainhack-jeu.azurewebsites.net';
+    const aiHistoryLocalUrl = 'http://localhost:8502';
+    const aiHistoryHostedUrl = 'https://brainhack-quizhistoireia.azurewebsites.net';
+
+    const realVsAiUrl = isLocalHost ? realVsAiLocalUrl : realVsAiHostedUrl;
+    const aiHistoryUrl = isLocalHost ? aiHistoryLocalUrl : aiHistoryHostedUrl;
+
+    const setupCardRedirect = function (cardElement, destinationUrl, options) {
+        if (!cardElement) return;
+
+        cardElement.style.cursor = 'pointer';
+        cardElement.setAttribute('role', 'button');
+        cardElement.setAttribute('tabindex', '0');
+
+        const openPythonGame = function () {
+            window.open(destinationUrl, '_blank', 'noopener,noreferrer');
+        };
+
+        cardElement.addEventListener('click', function (event) {
+            if (options && options.ignoreButtonClicks && event.target.closest('button')) return;
+            openPythonGame();
+        });
+
+        cardElement.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openPythonGame();
+            }
+        });
+    };
+
+    setupCardRedirect(realVsAiCard, realVsAiUrl, { ignoreButtonClicks: true });
+    setupCardRedirect(aiHistoryCard, aiHistoryUrl, { ignoreButtonClicks: false });
+});
