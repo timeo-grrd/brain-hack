@@ -323,22 +323,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 ? JSON.parse(article.intro)
                 : article.intro;
 
-            modalOverlay.querySelector('.ia-modal').innerHTML = `
-                <button class="ia-modal-close" aria-label="Fermer">×</button>
-                <div class="ia-modal-header">
-                    <h2>${article.title}</h2>
-                    ${intro.map(p => `<p>${p}</p>`).join('')}
+        modalOverlay.querySelector('.ia-modal').innerHTML = `
+            <button class="ia-modal-close" aria-label="Fermer">×</button>
+            <div class="ia-modal-header">
+                <h2>${article.title}</h2>
+                ${intro.map(p => `<p>${p}</p>`).join('')}
+            </div>
+            <div class="ia-modal-body">
+                ${sections.map(renderSection).join('')}
+            </div>
+            <div class="ia-modal-footer">
+
+                <!-- Likes -->
+                <div class="ia-likes">
+                    <button class="ia-like-btn" id="likeBtn">
+                        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                        </svg>
+                        <span id="likeCount">0</span>
+                    </button>
                 </div>
-                <div class="ia-modal-body">
-                    ${sections.map(renderSection).join('')}
+
+                <!-- Commentaires -->
+                <div class="ia-comments">
+                    <h4 class="ia-comments-title">Commentaires</h4>
+                    <div class="ia-comments-list" id="commentsList">
+                        <p class="ia-comments-empty">Chargement...</p>
+                    </div>
+                    <div class="ia-comment-form">
+                        <input
+                            type="text"
+                            id="commentInput"
+                            class="ia-comment-input"
+                            placeholder="Ajoute un commentaire..."
+                            maxlength="500"
+                        />
+                        <button class="ia-comment-submit" id="commentSubmit">Envoyer</button>
+                    </div>
                 </div>
+            </div>
             `;
             modalOverlay.querySelector('.ia-modal-close').addEventListener('click', closeModal);
+            await initModalInteractions(articleId);
+            
 
         } catch (err) {
-            modalOverlay.querySelector('.ia-modal-header').innerHTML = `
-                <p style="color:red">Impossible de charger l'article. Réessaie plus tard.</p>
-            `;
+            console.error('Erreur openModal:', err);
+    modalOverlay.querySelector('.ia-modal-header').innerHTML = `
+        <p style="color:red">Impossible de charger l'article. Réessaie plus tard.</p>
+    `;
         }
     }
 
@@ -385,6 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
     function trackCardRead(card) {
         if (!card || !window.BrainHackProgress) return;
         const articleId = card.id || card.querySelector('h2, h3')?.textContent
@@ -395,6 +429,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateArticleReadBadges();
 
+    async function loadAllLikeCounts() {
+    const token = localStorage.getItem('brainhack_token');
+
+    for (const articleId of TRACKED_ARTICLE_IDS) {
+        try {
+            const card = document.getElementById(articleId);
+            if (!card) continue;
+
+            const stats = card.querySelectorAll('.stat');
+
+            // Likes (nécessite token)
+            if (token) {
+                const likeRes = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (likeRes.ok) {
+                    const likeData = await likeRes.json();
+                    if (stats[0]) {
+                        const span = stats[0].querySelector('span');
+                        if (span) span.textContent = likeData.count;
+                    }
+                }
+            }
+
+            // Commentaires (public)
+            const commentRes = await fetch(`http://localhost:5282/api/comment/${articleId}/count`);
+            if (commentRes.ok) {
+                const commentData = await commentRes.json();
+                if (stats[1]) {
+                    const span = stats[1].querySelector('span');
+                    if (span) span.textContent = commentData.count;
+                }
+            }
+
+        } catch (e) {
+            // silencieux
+        }
+    }
+}
+
+loadAllLikeCounts();
 
     // ── Écouteurs cartes (UNE seule boucle) ──────────────────────────────────
 
@@ -456,26 +531,140 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Likes (simulation) ───────────────────────────────────────────────────
 
-    document.querySelectorAll('.stat').forEach(stat => {
-        stat.style.cursor = 'pointer';
-        stat.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const svg = this.querySelector('svg');
-            const text = this.childNodes[2];
-            const count = parseInt(text.textContent);
-            if (this.classList.contains('liked')) {
-                this.classList.remove('liked');
-                svg.style.fill = 'currentColor';
-                svg.style.color = 'rgba(255,255,255,0.7)';
-                text.textContent = ' ' + (count - 1);
-            } else {
-                this.classList.add('liked');
-                svg.style.fill = '#ec4899';
-                svg.style.color = '#ec4899';
-                text.textContent = ' ' + (count + 1);
+    // document.querySelectorAll('.stat').forEach(stat => {
+    //     stat.style.cursor = 'pointer';
+    //     stat.addEventListener('click', function (e) {
+    //         e.stopPropagation();
+    //         const svg = this.querySelector('svg');
+    //         const text = this.childNodes[2];
+    //         const count = parseInt(text.textContent);
+    //         if (this.classList.contains('liked')) {
+    //             this.classList.remove('liked');
+    //             svg.style.fill = 'currentColor';
+    //             svg.style.color = 'rgba(255,255,255,0.7)';
+    //             text.textContent = ' ' + (count - 1);
+    //         } else {
+    //             this.classList.add('liked');
+    //             svg.style.fill = '#ec4899';
+    //             svg.style.color = '#ec4899';
+    //             text.textContent = ' ' + (count + 1);
+    //         }
+    //     });
+    // });
+
+    async function initModalInteractions(articleId) {
+        const token = localStorage.getItem('brainhack_token');
+        console.log('token:', token);
+        console.log('commentSubmit trouvé:', document.getElementById('commentSubmit'));
+        console.log('form trouvée:', document.querySelector('.ia-comment-form'));
+        console.log('likeBtn trouvé:', document.getElementById('likeBtn'));
+    if (!token) {
+        // Non connecté : on masque le formulaire
+        const form = document.querySelector('.ia-comment-form');
+        const likeBtn = document.getElementById('likeBtn');
+        if (form) form.innerHTML = '<p class="ia-comments-empty">Connecte-toi pour liker et commenter.</p>';
+        if (likeBtn) likeBtn.disabled = true;
+        await loadComments(articleId, token);
+        return;
+    }
+
+    await loadLikeStatus(articleId, token);
+    await loadComments(articleId, token);
+
+    // Bouton like
+    const likeBtn = document.getElementById('likeBtn');
+    if (likeBtn) {
+        likeBtn.addEventListener('click', async () => {
+            const res = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                updateLikeUI(data);
             }
         });
+    }
+
+    // Bouton commentaire
+    const commentSubmit = document.getElementById('commentSubmit');
+    if (commentSubmit) {
+        commentSubmit.addEventListener('click', async () => {
+            const input = document.getElementById('commentInput');
+            const content = input?.value.trim();
+            if (!content) return;
+
+            const res = await fetch(`http://localhost:5282/api/comment/${articleId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ content })
+            });
+
+            if (res.ok) {
+                const comment = await res.json();
+                input.value = '';
+                appendComment(comment);
+            }
+        });
+    }
+}
+
+async function loadLikeStatus(articleId, token) {
+    const res = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
     });
+    if (res.ok) {
+        const data = await res.json();
+        updateLikeUI(data);
+    }
+}
+
+function updateLikeUI(data) {
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    if (likeCount) likeCount.textContent = data.count;
+    if (likeBtn) likeBtn.classList.toggle('liked', data.userHasLiked);
+}
+
+async function loadComments(articleId, token) {
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const res = await fetch(`http://localhost:5282/api/comment/${articleId}`, { headers });
+    const list = document.getElementById('commentsList');
+    if (!list) return;
+
+    if (res.ok) {
+        const comments = await res.json();
+        if (!comments.length) {
+            list.innerHTML = '<p class="ia-comments-empty">Aucun commentaire pour le moment.</p>';
+            return;
+        }
+        list.innerHTML = comments.map(c => commentHTML(c)).join('');
+    }
+}
+
+function appendComment(comment) {
+    const list = document.getElementById('commentsList');
+    if (!list) return;
+    const empty = list.querySelector('.ia-comments-empty');
+    if (empty) empty.remove();
+    list.insertAdjacentHTML('beforeend', commentHTML(comment));
+}
+
+function commentHTML(comment) {
+    const date = new Date(comment.createdAt).toLocaleDateString('fr-FR');
+    return `
+        <div class="ia-comment">
+            <div class="ia-comment-header">
+                <strong>${comment.userPseudo}</strong>
+                <span class="ia-comment-date">${date}</span>
+            </div>
+            <p class="ia-comment-content">${comment.content}</p>
+        </div>
+    `;
+}
 
 
     // ── Tilt 3D hover ────────────────────────────────────────────────────────
@@ -534,3 +723,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('🧠 BrainHack chargé avec succès !');
 });
+
+

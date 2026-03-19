@@ -40,7 +40,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('brainhack_token', data.token);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('currentUser', JSON.stringify({
                 id: data.id,
@@ -80,7 +80,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', async (e
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('brainhack_token', data.token);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('currentUser', JSON.stringify({
                 id: data.id,
