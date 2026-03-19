@@ -29,19 +29,29 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pseudo, email, password, role, avatarUrl: '' })
+            body: JSON.stringify({
+                pseudo: pseudo,
+                email: email,
+                password: password,
+                role: role === 'professeur' ? 'teacher' : 'student'
+            })
         });
 
         const data = await response.json();
 
         if (response.ok) {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify({
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify({
+                id: data.id,
+                name: data.pseudo,
                 pseudo: data.pseudo,
                 email: data.email,
                 role: data.role,
-                idCompte: data.idCompte
+                avatarUrl: data.avatarUrl,
+                totalXp: data.totalXp
             }));
+            localStorage.setItem('userData', localStorage.getItem('currentUser'));
             alert(`Bienvenue ${data.pseudo} !`);
             window.location.href = 'index.html';
         } else {
@@ -71,12 +81,17 @@ document.getElementById('loginFormElement')?.addEventListener('submit', async (e
 
         if (response.ok) {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify({
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('currentUser', JSON.stringify({
+                id: data.id,
+                name: data.pseudo,
                 pseudo: data.pseudo,
                 email: data.email,
                 role: data.role,
-                idCompte: data.idCompte
+                avatarUrl: data.avatarUrl,
+                totalXp: data.totalXp
             }));
+            localStorage.setItem('userData', localStorage.getItem('currentUser'));
             alert(`Bon retour ${data.pseudo} !`);
             window.location.href = 'index.html';
         } else {
