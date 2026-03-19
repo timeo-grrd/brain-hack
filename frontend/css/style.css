@@ -1991,6 +1991,14 @@ body {
     opacity: 0.9;
 }
 
+.profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
 .pseudo-text {
     font-size: 1.2rem;
     font-weight: 600;

@@ -50,6 +50,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const CERTIFICATION_KEY = 'brainhack_certifications_v1';
     const AUTH_PAGE = './authentification.html';
     const ACCOUNT_PAGE = './compte.html';
+    const DEFAULT_AVATAR_POOL = [
+        '../assets/greenAvatar.png',
+        '../assets/blueAvatar.png',
+        '../assets/redAvatar.png',
+        '../assets/yellowAvatar.png',
+        '../assets/purpleAvatar.png',
+        '../assets/orangeAvatar.png',
+        '../assets/cyanAvatar.png',
+        '../assets/pinkAvatar.png',
+        '../assets/limeAvatar.png'
+    ];
     const KNOWN_ARTICLES = [
         'ia-featured-card',
         'phone-intelligence-card',
@@ -140,11 +151,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonctions
     function checkAuthStatus() {
-        const userData = getStoredUserData();
+        let userData = getStoredUserData();
         const mode = new URLSearchParams(window.location.search).get('mode');
 
         if (onAccountPage) {
             if (userData) {
+                userData = ensureUserHasAvatar(userData);
                 showProfile(userData);
             } else {
                 window.location.href = AUTH_PAGE + '?mode=login';
@@ -198,6 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (pseudoTextElement && userData.pseudo) {
             pseudoTextElement.textContent = userData.pseudo;
         }
+
+        renderProfileAvatar(userData);
 
         // Mettre à jour les médailles débloquées
         updateMedals(userData.medals || []);
@@ -1301,6 +1315,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     email: email,
                     role: role,
                     password: password,
+                    avatarUrl: users[existingUserIndex].avatarUrl || pickRandomAvatarUrl(),
                     createdAt: users[existingUserIndex].createdAt || new Date().toISOString()
                 };
 
@@ -1326,6 +1341,7 @@ document.addEventListener('DOMContentLoaded', function() {
             email: email,
             role: role,
             password: password,
+            avatarUrl: pickRandomAvatarUrl(),
             medals: [], // Aucune médaille au début
             createdAt: new Date().toISOString()
         };
@@ -1422,6 +1438,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: (legacyUser.email || '').toLowerCase(),
                 role: legacyUser.role || 'eleve',
                 password: legacyUser.password || '',
+                avatarUrl: legacyUser.avatarUrl || '',
                 medals: Array.isArray(legacyUser.medals) ? legacyUser.medals : [],
                 createdAt: legacyUser.createdAt || new Date().toISOString()
             };
@@ -1441,6 +1458,76 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
         localStorage.setItem('userData', JSON.stringify(user));
+    }
+
+    function pickRandomAvatarUrl() {
+        const index = Math.floor(Math.random() * DEFAULT_AVATAR_POOL.length);
+        return DEFAULT_AVATAR_POOL[index];
+    }
+
+    function ensureUserHasAvatar(userData) {
+        if (!userData || typeof userData !== 'object') {
+            return userData;
+        }
+
+        if (typeof userData.avatarUrl === 'string' && userData.avatarUrl.trim()) {
+            return userData;
+        }
+
+        const updatedUser = {
+            ...userData,
+            avatarUrl: pickRandomAvatarUrl()
+        };
+
+        setCurrentUser(updatedUser);
+
+        const users = getUsers();
+        const userIndex = users.findIndex(user =>
+            (user.id && user.id === updatedUser.id) ||
+            ((user.email || '').toLowerCase() === (updatedUser.email || '').toLowerCase())
+        );
+        if (userIndex !== -1) {
+            users[userIndex] = {
+                ...users[userIndex],
+                avatarUrl: updatedUser.avatarUrl
+            };
+            persistUsers(users);
+        }
+
+        return updatedUser;
+    }
+
+    function renderProfileAvatar(userData) {
+        const avatarCircle = document.querySelector('.avatar-circle');
+        if (!avatarCircle) {
+            return;
+        }
+
+        const avatarUrl = typeof userData.avatarUrl === 'string' ? userData.avatarUrl.trim() : '';
+        const icon = avatarCircle.querySelector('svg');
+        let image = avatarCircle.querySelector('.profile-avatar-img');
+
+        if (!avatarUrl) {
+            if (image) {
+                image.remove();
+            }
+            if (icon) {
+                icon.style.display = 'block';
+            }
+            return;
+        }
+
+        if (!image) {
+            image = document.createElement('img');
+            image.className = 'profile-avatar-img';
+            image.alt = 'Avatar utilisateur';
+            avatarCircle.appendChild(image);
+        }
+
+        image.src = avatarUrl;
+        if (icon) {
+            icon.style.display = 'none';
+        }
     }
 
     function updateMedals(unlockedMedals) {
