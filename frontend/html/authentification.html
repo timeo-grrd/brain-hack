@@ -119,15 +119,19 @@
             <form class="auth-form" id="loginFormElement">
               <div class="form-group">
                 <input
-                  type="text"
+                  type="email"
+                  name="email"
+                  autocomplete="username"
                   class="form-input"
-                  placeholder="Votre pseudo ou adresse mail"
+                  placeholder="Votre adresse mail"
                   required
                 />
               </div>
               <div class="form-group">
                 <input
                   type="password"
+                  name="password"
+                  autocomplete="current-password"
                   class="form-input"
                   placeholder="Votre mot de passe"
                   required

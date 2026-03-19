@@ -125,9 +125,19 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
 document.getElementById('loginFormElement')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const inputs = e.target.querySelectorAll('input');
-    const email = inputs[0].value;
-    const password = inputs[1].value;
+    const formData = new FormData(e.target);
+    const email = String(formData.get('email') || '').trim().toLowerCase();
+    const password = String(formData.get('password') || '');
+
+    if (!email || !password) {
+        alert('Email et mot de passe requis');
+        return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        alert('Veuillez renseigner une adresse email valide');
+        return;
+    }
 
     try {
         const response = await fetch(`${API_URL}/auth/login`, {
