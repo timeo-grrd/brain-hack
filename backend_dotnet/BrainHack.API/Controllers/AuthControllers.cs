@@ -1,6 +1,7 @@
 using BrainHack.API.DTOs;
 using BrainHack.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace BrainHack.API.Controllers
 {
@@ -8,6 +9,7 @@ namespace BrainHack.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private static readonly EmailAddressAttribute EmailValidator = new();
         private readonly AuthService _authService;
 
         public AuthController(AuthService authService)
@@ -23,6 +25,9 @@ namespace BrainHack.API.Controllers
                 || string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest(new { message = "Tous les champs sont requis" });
 
+            if (!EmailValidator.IsValid(dto.Email?.Trim()))
+                return BadRequest(new { message = "Adresse email invalide" });
+
             var result = await _authService.Register(dto);
 
             if (result == null)
@@ -36,6 +41,9 @@ namespace BrainHack.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest(new { message = "Email et mot de passe requis" });
+
+            if (!EmailValidator.IsValid(dto.Email?.Trim()))
+                return BadRequest(new { message = "Adresse email invalide" });
 
             var result = await _authService.Login(dto);
 

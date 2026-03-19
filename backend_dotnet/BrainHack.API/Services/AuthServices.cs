@@ -85,7 +85,30 @@ namespace BrainHack.API.Services
             var user = response.Models.FirstOrDefault();
             if (user == null) return null;
 
-            var passwordOk = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+            var passwordInput = dto.Password ?? string.Empty;
+            var storedPasswordHash = user.PasswordHash?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(storedPasswordHash)) return null;
+
+            var passwordOk = false;
+            var isBcryptHash = storedPasswordHash.StartsWith("$2a$")
+                || storedPasswordHash.StartsWith("$2b$")
+                || storedPasswordHash.StartsWith("$2y$");
+
+            if (isBcryptHash)
+            {
+                passwordOk = BCrypt.Net.BCrypt.Verify(passwordInput, storedPasswordHash);
+            }
+            else
+            {
+                passwordOk = string.Equals(passwordInput, storedPasswordHash, StringComparison.Ordinal);
+
+                if (passwordOk)
+                {
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordInput);
+                    await _supabase.From<User>().Update(user);
+                }
+            }
+
             if (!passwordOk) return null;
 
             return new AuthResponseDTO
