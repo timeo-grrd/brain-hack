@@ -1,4 +1,19 @@
 const API_URL = 'http://localhost:5282/api';
+const DEFAULT_AVATAR_POOL = [
+    '../assets/greenAvatar.png',
+    '../assets/blueAvatar.png',
+    '../assets/redAvatar.png',
+    '../assets/yellowAvatar.png',
+    '../assets/purpleAvatar.png',
+    '../assets/orangeAvatar.png',
+    '../assets/cyanAvatar.png',
+    '../assets/pinkAvatar.png',
+    '../assets/limeAvatar.png'
+];
+
+function pickRandomAvatarUrl() {
+    return DEFAULT_AVATAR_POOL[Math.floor(Math.random() * DEFAULT_AVATAR_POOL.length)];
+}
 
 // Basculer entre inscription et connexion
 document.getElementById('showLogin')?.addEventListener('click', () => {
@@ -24,6 +39,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
     const email = inputs[1].value;
     const role = e.target.querySelector('input[name="role"]:checked').value;
     const password = inputs[3].value;
+    const avatarUrl = pickRandomAvatarUrl();
 
     try {
         const response = await fetch(`${API_URL}/auth/register`, {
@@ -33,7 +49,8 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
                 pseudo: pseudo,
                 email: email,
                 password: password,
-                role: role === 'professeur' ? 'teacher' : 'student'
+                role: role === 'professeur' ? 'teacher' : 'student',
+                avatarUrl: avatarUrl
             })
         });
 

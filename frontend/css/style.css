@@ -1997,9 +1997,15 @@ body {
     margin: 0 auto 20px;
     box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3);
     transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
 .avatar-circle:hover { transform: scale(1.05); }
+
+.avatar-circle:focus-visible {
+    outline: 3px solid rgba(99, 102, 241, 0.7);
+    outline-offset: 4px;
+}
 
 .avatar-circle svg {
     width: 80px;
@@ -2014,6 +2020,16 @@ body {
     object-fit: cover;
     border-radius: 50%;
     display: block;
+}
+
+.avatar-input-hidden {
+    display: none;
+}
+
+.avatar-help-text {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-light);
 }
 
 .pseudo-text {

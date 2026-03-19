@@ -1,4 +1,41 @@
-const API_BASE = 'http://localhost:5282';
+const API_BASE_CANDIDATES = buildApiBaseCandidates();
+
+function buildApiBaseCandidates() {
+    const candidates = [];
+    const add = value => {
+        if (!value || typeof value !== 'string') return;
+        const normalized = value.trim().replace(/\/$/, '').replace(/\/api$/i, '');
+        if (!normalized) return;
+        if (!candidates.includes(normalized)) candidates.push(normalized);
+    };
+
+    add(localStorage.getItem('brainhack_api_url'));
+    add('http://localhost:5282');
+    add('https://localhost:7258');
+
+    const { protocol, hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        add(`${protocol}//${hostname}:5282`);
+        add(`${protocol}//${hostname}:7258`);
+    }
+
+    return candidates;
+}
+
+async function fetchWithApiFallback(endpoint, options) {
+    let lastError = null;
+
+    for (const base of API_BASE_CANDIDATES) {
+        try {
+            const response = await fetch(`${base}${endpoint}`, options);
+            return response;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error('API inaccessible');
+}
 
 const DEFAULT_AVATAR_POOL = [
     '../assets/greenAvatar.png',
@@ -15,12 +52,72 @@ const DEFAULT_AVATAR_POOL = [
 // ─── Helpers API ─────────────────────────────────────────────────────────────
 
 async function apiPost(endpoint, body) {
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetchWithApiFallback(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     });
     const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+}
+
+async function apiPutWithAuth(endpoint, body, token) {
+    const res = await fetchWithApiFallback(endpoint, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+    });
+
+    let data = null;
+    try {
+        data = await res.json();
+    } catch {
+        data = null;
+    }
+
+    return { ok: res.ok, status: res.status, data };
+}
+
+async function apiUploadAvatar(endpoint, file, token) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const res = await fetchWithApiFallback(endpoint, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    });
+
+    let data = null;
+    try {
+        data = await res.json();
+    } catch {
+        data = null;
+    }
+
+    return { ok: res.ok, status: res.status, data };
+}
+
+async function apiGetWithAuth(endpoint, token) {
+    const res = await fetchWithApiFallback(endpoint, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    let data = null;
+    try {
+        data = await res.json();
+    } catch {
+        data = null;
+    }
+
     return { ok: res.ok, status: res.status, data };
 }
 
@@ -114,6 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const profRankingEmpty = document.getElementById('profRankingEmpty');
     const studentClassLabel = document.getElementById('studentClassLabel');
     const studentCustomArticlesList = document.getElementById('studentCustomArticlesList');
+    const avatarCircle = document.querySelector('.avatar-circle');
+    const avatarInput = document.getElementById('accountAvatarInput');
     const profGameRealVsAiEnabled = document.getElementById('profGameRealVsAiEnabled');
     const profGameRealVsAiLocalUrl = document.getElementById('profGameRealVsAiLocalUrl');
     const profGameRealVsAiHostedUrl = document.getElementById('profGameRealVsAiHostedUrl');
@@ -141,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     let activeProfessorClassId = null;
+    let isAvatarUpdating = false;
 
     // ── Event listeners ───────────────────────────────────────────────────────
 
@@ -157,6 +257,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (profAllowedArticlesList) profAllowedArticlesList.addEventListener('change', handleKnownArticleToggle);
     if (profCertificationRequiredArticlesList) profCertificationRequiredArticlesList.addEventListener('change', handleCertificationRequirementToggle);
     if (profSaveGameSettingsBtn) profSaveGameSettingsBtn.addEventListener('click', saveGameSettingsForActiveClass);
+    if (avatarCircle) {
+        avatarCircle.addEventListener('click', handleAvatarChangeClick);
+        avatarCircle.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleAvatarChangeClick();
+            }
+        });
+    }
+    if (avatarInput) avatarInput.addEventListener('change', handleAvatarFileSelected);
 
     const certificationLink = document.getElementById('dashboardCertificationLink');
     if (certificationLink) {
@@ -174,12 +284,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Auth ──────────────────────────────────────────────────────────────────
 
-    function checkAuthStatus() {
+    async function checkAuthStatus() {
         let userData = getStoredUserData();
         const mode = new URLSearchParams(window.location.search).get('mode');
 
         if (onAccountPage) {
             if (userData && getToken()) {
+                userData = await syncUserFromDatabase(userData);
                 userData = ensureUserHasAvatar(userData);
                 showProfile(userData);
             } else {
@@ -192,6 +303,35 @@ document.addEventListener('DOMContentLoaded', function () {
             showAuth();
             if (mode === 'login') showLogin();
             else showRegister();
+        }
+    }
+
+    async function syncUserFromDatabase(localUserData) {
+        const token = getToken();
+        if (!token || !localUserData) return localUserData;
+
+        try {
+            const response = await apiGetWithAuth('/api/user/me', token);
+            if (!response.ok || !response.data) return localUserData;
+
+            const syncedUser = {
+                ...localUserData,
+                id: response.data.id || localUserData.id,
+                name: response.data.pseudo || localUserData.name,
+                pseudo: response.data.pseudo || localUserData.pseudo,
+                email: response.data.email || localUserData.email,
+                role: response.data.role || localUserData.role,
+                avatarUrl: response.data.avatar_url || localUserData.avatarUrl,
+                totalXp: Number.isFinite(Number(response.data.total_xp))
+                    ? Number(response.data.total_xp)
+                    : localUserData.totalXp
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(syncedUser));
+            localStorage.setItem('userData', JSON.stringify(syncedUser));
+            return syncedUser;
+        } catch {
+            return localUserData;
         }
     }
 
@@ -280,6 +420,72 @@ document.addEventListener('DOMContentLoaded', function () {
 
         image.src = avatarUrl;
         if (icon) icon.style.display = 'none';
+
+        avatarCircle.setAttribute('role', 'button');
+        avatarCircle.setAttribute('tabindex', '0');
+        avatarCircle.setAttribute('title', 'Clique pour changer ton avatar');
+        avatarCircle.setAttribute('aria-label', 'Changer d avatar');
+    }
+
+    async function handleAvatarChangeClick() {
+        if (!onAccountPage || isAvatarUpdating || !avatarInput) return;
+        avatarInput.value = '';
+        avatarInput.click();
+    }
+
+    async function handleAvatarFileSelected(event) {
+        if (isAvatarUpdating) return;
+
+        const input = event.target;
+        if (!(input instanceof HTMLInputElement)) return;
+        const file = input.files && input.files[0] ? input.files[0] : null;
+        if (!file) return;
+
+        const token = getToken();
+        if (!token) {
+            showNotification('Session invalide, reconnecte-toi.', 'info');
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            showNotification('Fichier invalide: image attendue.', 'info');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification('Image trop lourde (max 5 Mo).', 'info');
+            return;
+        }
+
+        isAvatarUpdating = true;
+        try {
+            const result = await apiUploadAvatar('/api/user/avatar/upload', file, token);
+            if (!result.ok) {
+                throw new Error(result.data?.message || 'Upload avatar impossible');
+            }
+
+            const userData = getStoredUserData();
+            if (!userData) return;
+
+            const updatedUser = {
+                ...userData,
+                avatarUrl: result.data?.avatar_url || userData.avatarUrl
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            localStorage.setItem('userData', JSON.stringify(updatedUser));
+            renderProfileAvatar(updatedUser);
+            showNotification('Avatar importé avec succès !', 'success');
+        } catch (error) {
+            const isNetworkIssue = error instanceof TypeError;
+            const message = isNetworkIssue
+                ? 'API inaccessible. Lance le backend (.NET) puis réessaie.'
+                : (error instanceof Error ? error.message : 'Impossible d\'importer cet avatar.');
+            showNotification(message, 'info');
+        } finally {
+            isAvatarUpdating = false;
+            input.value = '';
+        }
     }
 
     // ── Dashboard élève ───────────────────────────────────────────────────────

@@ -9,6 +9,19 @@ namespace BrainHack.API.Services
 {
     public class AuthService
     {
+        private static readonly string[] DefaultAvatarPool =
+        {
+            "../assets/greenAvatar.png",
+            "../assets/blueAvatar.png",
+            "../assets/redAvatar.png",
+            "../assets/yellowAvatar.png",
+            "../assets/purpleAvatar.png",
+            "../assets/orangeAvatar.png",
+            "../assets/cyanAvatar.png",
+            "../assets/pinkAvatar.png",
+            "../assets/limeAvatar.png"
+        };
+
         private readonly Supabase.Client _supabase;
         private readonly IConfiguration _config;
 
@@ -22,6 +35,7 @@ namespace BrainHack.API.Services
         {
             var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
             var normalizedRole = NormalizeRole(dto.Role);
+            var avatarUrl = ResolveAvatarUrl(dto.AvatarUrl);
 
             var existing = await _supabase
                 .From<User>()
@@ -38,6 +52,7 @@ namespace BrainHack.API.Services
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Pseudo = dto.Pseudo.Trim(),
                 Role = normalizedRole,
+                AvatarUrl = avatarUrl,
                 TotalXp = 0,
                 CreatedAt = DateTime.UtcNow
             };
@@ -89,6 +104,16 @@ namespace BrainHack.API.Services
         {
             var normalized = role.Trim().ToLowerInvariant();
             return normalized == "teacher" ? "teacher" : "student";
+        }
+
+        private static string ResolveAvatarUrl(string? avatarUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(avatarUrl))
+            {
+                return avatarUrl.Trim();
+            }
+
+            return DefaultAvatarPool[Random.Shared.Next(DefaultAvatarPool.Length)];
         }
 
         private string GenerateToken(User user)

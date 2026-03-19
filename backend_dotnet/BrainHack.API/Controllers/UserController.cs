@@ -17,6 +17,35 @@ namespace BrainHack.API.Controllers
             _userService = userService;
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new { message = "Utilisateur non authentifie" });
+            }
+
+            var user = await _userService.GetById(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "Utilisateur introuvable" });
+            }
+
+            var avatarDisplayUrl = await _userService.ResolveAvatarUrlForClient(user.AvatarUrl);
+
+            return Ok(new
+            {
+                id = user.Id,
+                pseudo = user.Pseudo,
+                email = user.Email,
+                role = user.Role,
+                avatar_url = avatarDisplayUrl,
+                total_xp = user.TotalXp
+            });
+        }
+
         [HttpPut("avatar")]
         [Authorize]
         public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarDTO dto)
@@ -38,10 +67,44 @@ namespace BrainHack.API.Controllers
                 return NotFound(new { message = "Utilisateur introuvable" });
             }
 
+            var avatarDisplayUrl = await _userService.ResolveAvatarUrlForClient(updated.AvatarUrl);
+
             return Ok(new
             {
                 id = updated.Id,
-                avatar_url = updated.AvatarUrl
+                avatar_url = avatarDisplayUrl
+            });
+        }
+
+        [HttpPost("avatar/upload")]
+        [Authorize]
+        [RequestSizeLimit(5 * 1024 * 1024)]
+        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile? avatar)
+        {
+            var file = avatar ?? Request.Form.Files.FirstOrDefault();
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "Fichier avatar requis" });
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new { message = "Utilisateur non authentifie" });
+            }
+
+            var updated = await _userService.UploadAvatar(userId, file);
+            if (!updated.IsSuccess || updated.User == null)
+            {
+                return BadRequest(new { message = updated.Error ?? "Impossible de televerser l'avatar" });
+            }
+
+            var avatarDisplayUrl = await _userService.ResolveAvatarUrlForClient(updated.User.AvatarUrl);
+
+            return Ok(new
+            {
+                id = updated.User.Id,
+                avatar_url = avatarDisplayUrl
             });
         }
 
