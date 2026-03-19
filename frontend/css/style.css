@@ -315,7 +315,6 @@ body {
     width: min(72vw, 760px);
     height: min(72vw, 760px);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.42) 0%, rgba(168, 85, 247, 0.24) 40%, rgba(224, 231, 255, 0) 75%);
     filter: blur(12px);
     animation: heroGlowPulse 5.5s ease-in-out infinite;
 }

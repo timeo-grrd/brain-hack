@@ -224,3 +224,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('🎮 Mini-jeux BrainHack chargés !');
 });
+
