@@ -256,43 +256,21 @@
 
         <!-- Jeu 3 : Ball Blast -->
         <div class="game-card" id="ball-blast-card">
-          <p class="game-subtitle" id="ball-blast-subtitle">
-            Ball Blast ludique
-          </p>
+          <p class="game-subtitle" id="ball-blast-subtitle">Ball Blast</p>
           <div class="game-preview ball-blast-preview">
-            <div class="game-header">
-              <div class="score">Score: 1540</div>
-              <div class="game-title">BALL BLAST</div>
-              <button class="pause-btn">❚❚</button>
+            <iframe
+              id="ball-blast-frame"
+              src="about:blank"
+              data-game-src="../../python_games/games/ball-blast/index.html"
+              title="Jeu Ball Blast"
+              loading="lazy"
+              class="ball-blast-frame is-blurred"
+            ></iframe>
+            <div id="ball-blast-overlay" class="ball-blast-overlay">
+              <button id="ball-blast-play-btn" class="ball-blast-play-btn">
+                Play
+              </button>
             </div>
-            <div class="game-area">
-              <!-- Balles -->
-              <div class="ball ball-red" style="left: 20%; top: 30%">
-                <span>AI</span>
-                <span class="ball-sub">Paris</span>
-              </div>
-              <div class="ball ball-blue" style="left: 60%; top: 20%">
-                <span>6</span>
-                <span class="ball-sub">London</span>
-              </div>
-              <div class="ball ball-yellow" style="left: 40%; top: 15%">
-                <span class="ball-bonus">+</span>
-              </div>
-              <div class="ball ball-orange" style="left: 75%; top: 35%">
-                <span>?</span>
-              </div>
-
-              <!-- Canon -->
-              <div class="cannon">
-                <div class="cannon-barrel"></div>
-                <div class="cannon-base"></div>
-              </div>
-
-              <!-- Projectiles -->
-              <div class="projectile" style="left: 48%; bottom: 80px"></div>
-              <div class="projectile" style="left: 52%; bottom: 120px"></div>
-            </div>
-            <div class="ground"></div>
           </div>
         </div>
       </div>

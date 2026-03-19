@@ -471,7 +471,116 @@ document.addEventListener('DOMContentLoaded', function () {
     if (ballBlastSubtitle) {
         ballBlastSubtitle.textContent = settings.ballBlast.subtitle;
     }
+
+    initializeBallBlastEmbed();
 });
+
+function initializeBallBlastEmbed() {
+    const frame = document.getElementById('ball-blast-frame');
+    const overlay = document.getElementById('ball-blast-overlay');
+    const playButton = document.getElementById('ball-blast-play-btn');
+
+    if (!frame || !overlay || !playButton) {
+        return;
+    }
+
+    const gameSrc = frame.dataset.gameSrc;
+    if (!gameSrc) {
+        return;
+    }
+
+    if (typeof window.ballBlastLastScore === 'undefined') {
+        window.ballBlastLastScore = null;
+    }
+
+    window.getBallBlastLastScore = function () {
+        return window.ballBlastLastScore;
+    };
+
+    let hasStarted = false;
+
+    function fitBallBlastToFrame() {
+        if (!hasStarted) {
+            return;
+        }
+
+        try {
+            const doc = frame.contentDocument;
+            const canvas = doc?.getElementById('unity-canvas');
+            if (!doc || !canvas) {
+                return;
+            }
+
+            doc.documentElement.style.width = '100%';
+            doc.documentElement.style.height = '100%';
+            doc.documentElement.style.overflow = 'hidden';
+
+            doc.body.style.margin = '0';
+            doc.body.style.width = '100%';
+            doc.body.style.height = '100%';
+            doc.body.style.overflow = 'hidden';
+            doc.body.style.transform = 'none';
+
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.display = 'block';
+        } catch (_error) {
+            // Acces impossible si le navigateur traite l'iframe en cross-origin.
+        }
+    }
+
+    playButton.addEventListener('click', function () {
+        if (hasStarted) {
+            frame.classList.remove('is-blurred');
+            overlay.style.display = 'none';
+            return;
+        }
+
+        hasStarted = true;
+        playButton.disabled = true;
+        playButton.textContent = 'Chargement...';
+        frame.src = gameSrc;
+    });
+
+    frame.addEventListener('load', function () {
+        frame.classList.remove('is-blurred');
+        overlay.style.display = 'none';
+        playButton.disabled = false;
+        playButton.textContent = 'Play';
+        fitBallBlastToFrame();
+
+        try {
+            frame.contentWindow?.focus();
+        } catch (_error) {
+            // Rien a faire si le focus est bloque.
+        }
+    });
+
+    if (!window.__ballBlastScoreListenerInitialized) {
+        window.addEventListener('message', function (event) {
+            const isFromFrame = event.source === frame.contentWindow;
+            const data = event.data;
+            if (!isFromFrame || !data || data.type !== 'BALL_BLAST_SCORE') {
+                return;
+            }
+
+            const numericScore = Number(data.score);
+            if (!Number.isFinite(numericScore)) {
+                return;
+            }
+
+            window.ballBlastLastScore = numericScore;
+            localStorage.setItem('brainhack_ball_blast_last_score', String(numericScore));
+
+            if (window.BrainHackProgress) {
+                window.BrainHackProgress.trackMiniGameScore('ball-blast', numericScore, 1000);
+            }
+        });
+        window.__ballBlastScoreListenerInitialized = true;
+    }
+
+    window.addEventListener('resize', fitBallBlastToFrame);
+}
 
 function normalizeGameSettings(rawSettings) {
     const defaults = {

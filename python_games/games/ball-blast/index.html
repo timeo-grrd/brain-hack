@@ -6,9 +6,31 @@
     <title>Unity Web Player | HackAThon</title>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; background: #231F20;">
-    <canvas id="unity-canvas" width="1080" height="1080" tabindex="-1" style="width: 100%; height: 100%; background: #231F20; display: block;"></canvas>
+    <canvas id="unity-canvas" width="960" height="600" tabindex="-1" style="width: 100%; height: 100%; background: #231F20; display: block;"></canvas>
     <script src="Build/ball-blast.loader.js"></script>
     <script>
+      function reportBallBlastScore(score) {
+        var parsedScore = Number(score);
+        if (!Number.isFinite(parsedScore)) {
+          return;
+        }
+
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(
+            {
+              type: 'BALL_BLAST_SCORE',
+              source: 'ball-blast',
+              score: parsedScore,
+              sentAt: Date.now()
+            },
+            '*'
+          );
+        }
+      }
+
+      // Fonction appelee par Unity au Game Over.
+      window.reportBallBlastScore = reportBallBlastScore;
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
         var meta = document.createElement('meta');
