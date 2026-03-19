@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\kelvya\\2025-2026\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj": {}
+    "C:\\Users\\Barraud\\OneDrive - Emineo Education\\Cours\\Hack A Thon\\Code\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj": {}
   },
   "projects": {
-    "D:\\kelvya\\2025-2026\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj": {
+    "C:\\Users\\Barraud\\OneDrive - Emineo Education\\Cours\\Hack A Thon\\Code\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\kelvya\\2025-2026\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj",
+        "projectUniqueName": "C:\\Users\\Barraud\\OneDrive - Emineo Education\\Cours\\Hack A Thon\\Code\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj",
         "projectName": "BrainHack.API",
-        "projectPath": "D:\\kelvya\\2025-2026\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj",
-        "packagesPath": "C:\\Users\\kelvya\\.nuget\\packages\\",
-        "outputPath": "D:\\kelvya\\2025-2026\\HackAThon\\backend_dotnet\\BrainHack.API\\obj\\",
+        "projectPath": "C:\\Users\\Barraud\\OneDrive - Emineo Education\\Cours\\Hack A Thon\\Code\\HackAThon\\backend_dotnet\\BrainHack.API\\BrainHack.API.csproj",
+        "packagesPath": "C:\\Users\\Barraud\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Barraud\\OneDrive - Emineo Education\\Cours\\Hack A Thon\\Code\\HackAThon\\backend_dotnet\\BrainHack.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\kelvya\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Barraud\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"

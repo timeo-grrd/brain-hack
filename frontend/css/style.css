@@ -900,6 +900,24 @@ body {
     box-shadow: 0 14px 36px rgba(245, 158, 11, 0.45);
 }
 
+.game-launch-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 6, 23, 0.3);
+    backdrop-filter: blur(2px);
+    z-index: 4;
+}
+
+.game-launch-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 .game-header {
     display: flex;
     justify-content: space-between;
