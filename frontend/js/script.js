@@ -136,11 +136,39 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
+    function ensureMobileAccountEntry(isConnected) {
+        const navLinks = document.querySelector('.nav-links');
+        if (!navLinks) return;
+
+        let mobileAccountLink = navLinks.querySelector('[data-mobile-account-link="true"]');
+        if (!mobileAccountLink) {
+            mobileAccountLink = document.createElement('a');
+            mobileAccountLink.className = 'nav-link nav-link-mobile-account';
+            mobileAccountLink.dataset.mobileAccountLink = 'true';
+            navLinks.appendChild(mobileAccountLink);
+        }
+
+        if (isConnected) {
+            mobileAccountLink.href = getHeaderAccountPath();
+            mobileAccountLink.textContent = 'Mon compte';
+            return;
+        }
+
+        mobileAccountLink.href = 'authentification.html?mode=login';
+        mobileAccountLink.textContent = 'Se connecter';
+    }
+
     function applyHeaderSessionState() {
         const connectedUser = getConnectedUser();
-        if (!connectedUser) return;
+        if (!connectedUser) {
+            ensureMobileAccountEntry(false);
+            return;
+        }
         const navActions = document.querySelector('.nav-actions');
-        if (!navActions) return;
+        if (!navActions) {
+            ensureMobileAccountEntry(true);
+            return;
+        }
         const links = navActions.querySelectorAll('a');
         const displayName = connectedUser.name || connectedUser.pseudo || 'Utilisateur';
         const accountPath = getHeaderAccountPath();
@@ -170,6 +198,8 @@ document.addEventListener('DOMContentLoaded', function () {
             navActions.appendChild(sessionBadge);
         }
         sessionBadge.textContent = `Connecté: ${displayName}`;
+
+        ensureMobileAccountEntry(true);
     }
 
     applyHeaderSessionState();
