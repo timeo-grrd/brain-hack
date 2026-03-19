@@ -6,3 +6,7 @@ node_modules/
 
 # Server secrets
 .env
+
+# .NET build artifacts
+**/bin/
+**/obj/
