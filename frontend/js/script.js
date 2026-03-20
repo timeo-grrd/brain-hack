@@ -1,7 +1,7 @@
 // Suivi centralise de la progression eleve (articles + mini-jeux).
 (function () {
     const STORAGE_KEY = 'brainhack_student_progress_v1';
-    const GAME_API_BASE_URL = localStorage.getItem('brainhack_api_url') || 'http://localhost:5282/api';
+    const GAME_API_BASE_URL = 'https://brain-hack.fr/api';
 
     function getStorage() {
         try {
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('keydown', onEscape);
 
         try {
-            const res = await fetch(`http://localhost:5282/api/article/${articleId}`);
+            const res = await fetch(`https://brain-hack.fr/api/article/${articleId}`);
             if (!res.ok) throw new Error('Article introuvable');
             const article = await res.json();
 
@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Likes (nécessite token)
             if (token) {
-                const likeRes = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+                const likeRes = await fetch(`https://brain-hack.fr/api/like/${articleId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (likeRes.ok) {
@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Commentaires (public)
-            const commentRes = await fetch(`http://localhost:5282/api/comment/${articleId}/count`);
+            const commentRes = await fetch(`https://brain-hack.fr/api/comment/${articleId}/count`);
             if (commentRes.ok) {
                 const commentData = await commentRes.json();
                 if (stats[1]) {
@@ -640,7 +640,7 @@ loadAllLikeCounts();
     const likeBtn = document.getElementById('likeBtn');
     if (likeBtn) {
         likeBtn.addEventListener('click', async () => {
-            const res = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+            const res = await fetch(`https://brain-hack.fr/api/like/${articleId}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -659,7 +659,7 @@ loadAllLikeCounts();
             const content = input?.value.trim();
             if (!content) return;
 
-            const res = await fetch(`http://localhost:5282/api/comment/${articleId}`, {
+            const res = await fetch(`https://brain-hack.fr/api/comment/${articleId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -678,7 +678,7 @@ loadAllLikeCounts();
 }
 
 async function loadLikeStatus(articleId, token) {
-    const res = await fetch(`http://localhost:5282/api/like/${articleId}`, {
+    const res = await fetch(`https://brain-hack.fr/api/like/${articleId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.ok) {
@@ -696,7 +696,7 @@ function updateLikeUI(data) {
 
 async function loadComments(articleId, token) {
     const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    const res = await fetch(`http://localhost:5282/api/comment/${articleId}`, { headers });
+    const res = await fetch(`https://brain-hack.fr/api/comment/${articleId}`, { headers });
     const list = document.getElementById('commentsList');
     if (!list) return;
 

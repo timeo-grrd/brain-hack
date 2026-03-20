@@ -1,4 +1,4 @@
-@BrainHack.API_HostAddress = http://localhost:5282
+@BrainHack.API_HostAddress = https://brain-hack.fr
 
 GET {{BrainHack.API_HostAddress}}/weatherforecast/
 Accept: application/json

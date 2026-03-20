@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5282/api';
+const API_URL = 'https://brain-hack.fr/api';
 const DEFAULT_AVATAR_POOL = [
     '../assets/greenAvatar.png',
     '../assets/blueAvatar.png',

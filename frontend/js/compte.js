@@ -10,7 +10,7 @@ function buildApiBaseCandidates() {
     };
 
     add(localStorage.getItem('brainhack_api_url'));
-    add('http://localhost:5282');
+    add('https://brain-hack.fr');
     add('https://localhost:7258');
 
     const { protocol, hostname } = window.location;
