@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend_dotnet/BrainHack.API
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    ports:
+      - "5282:5282"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5282
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      Supabase__Url: ${SUPABASE_URL}
+      Supabase__AnonKey: ${SUPABASE_KEY}
