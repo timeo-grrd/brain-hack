@@ -1,41 +1,4 @@
-const API_BASE_CANDIDATES = buildApiBaseCandidates();
-
-function buildApiBaseCandidates() {
-    const candidates = [];
-    const add = value => {
-        if (!value || typeof value !== 'string') return;
-        const normalized = value.trim().replace(/\/$/, '').replace(/\/api$/i, '');
-        if (!normalized) return;
-        if (!candidates.includes(normalized)) candidates.push(normalized);
-    };
-
-    add(localStorage.getItem('brainhack_api_url'));
-    add('https://brain-hack.fr');
-    add('https://localhost:7258');
-
-    const { protocol, hostname } = window.location;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        add(`${protocol}//${hostname}:5282`);
-        add(`${protocol}//${hostname}:7258`);
-    }
-
-    return candidates;
-}
-
-async function fetchWithApiFallback(endpoint, options) {
-    let lastError = null;
-
-    for (const base of API_BASE_CANDIDATES) {
-        try {
-            const response = await fetch(`${base}${endpoint}`, options);
-            return response;
-        } catch (error) {
-            lastError = error;
-        }
-    }
-
-    throw lastError || new Error('API inaccessible');
-}
+const API_BASE = 'http://localhost:5282';
 
 const DEFAULT_AVATAR_POOL = [
     '../assets/greenAvatar.png',
@@ -52,7 +15,7 @@ const DEFAULT_AVATAR_POOL = [
 // ─── Helpers API ─────────────────────────────────────────────────────────────
 
 async function apiPost(endpoint, body) {
-    const res = await fetchWithApiFallback(endpoint, {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -62,7 +25,7 @@ async function apiPost(endpoint, body) {
 }
 
 async function apiPutWithAuth(endpoint, body, token) {
-    const res = await fetchWithApiFallback(endpoint, {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -70,54 +33,18 @@ async function apiPutWithAuth(endpoint, body, token) {
         },
         body: JSON.stringify(body)
     });
-
     let data = null;
-    try {
-        data = await res.json();
-    } catch {
-        data = null;
-    }
-
-    return { ok: res.ok, status: res.status, data };
-}
-
-async function apiUploadAvatar(endpoint, file, token) {
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    const res = await fetchWithApiFallback(endpoint, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`
-        },
-        body: formData
-    });
-
-    let data = null;
-    try {
-        data = await res.json();
-    } catch {
-        data = null;
-    }
-
+    try { data = await res.json(); } catch { data = null; }
     return { ok: res.ok, status: res.status, data };
 }
 
 async function apiGetWithAuth(endpoint, token) {
-    const res = await fetchWithApiFallback(endpoint, {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
         method: 'GET',
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
     });
-
     let data = null;
-    try {
-        data = await res.json();
-    } catch {
-        data = null;
-    }
-
+    try { data = await res.json(); } catch { data = null; }
     return { ok: res.ok, status: res.status, data };
 }
 
@@ -185,8 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const authSection = document.getElementById('authSection');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
-    const authLoginNavLink = document.querySelector('.nav-actions a[href*="mode=login"]');
-    const authRegisterNavLink = document.querySelector('.nav-actions a[href*="mode=register"]');
     const showLoginBtn = document.getElementById('showLogin');
     const showRegisterQuestionBtn = document.getElementById('showRegisterQuestion');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -248,20 +173,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (showLoginBtn) showLoginBtn.addEventListener('click', showLogin);
     if (showRegisterQuestionBtn) showRegisterQuestionBtn.addEventListener('click', showRegister);
-    if (onAuthPage && authLoginNavLink) {
-        authLoginNavLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            showAuth('login');
-            history.replaceState({}, '', 'authentification.html?mode=login');
-        });
-    }
-    if (onAuthPage && authRegisterNavLink) {
-        authRegisterNavLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            showAuth('register');
-            history.replaceState({}, '', 'authentification.html?mode=register');
-        });
-    }
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
     if (logoutBtnProfessor) logoutBtnProfessor.addEventListener('click', logout);
     if (profCreateClassBtn) profCreateClassBtn.addEventListener('click', createProfessorClass);
@@ -302,8 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function checkAuthStatus() {
         let userData = getStoredUserData();
-        const rawMode = new URLSearchParams(window.location.search).get('mode');
-        const mode = String(rawMode || 'register').trim().toLowerCase();
+        const mode = new URLSearchParams(window.location.search).get('mode');
 
         if (onAccountPage) {
             if (userData && getToken()) {
@@ -317,7 +227,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (onAuthPage) {
-            showAuth(mode === 'login' ? 'login' : 'register');
+            showAuth();
+            if (mode === 'login') showLogin();
+            else showRegister();
         }
     }
 
@@ -386,11 +298,10 @@ document.addEventListener('DOMContentLoaded', function () {
         renderStudentDashboard(userData);
     }
 
-    function showAuth(mode = 'register') {
+    function showAuth() {
         if (profileSection) profileSection.classList.add('hidden');
         if (authSection) authSection.classList.remove('hidden');
-        if (mode === 'login') showLogin();
-        else showRegister();
+        showRegister();
     }
 
     function showLogin() {

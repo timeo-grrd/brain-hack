@@ -12,11 +12,11 @@ namespace BrainHack.API.Models
         [Column("title")]
         public string Title { get; set; } = string.Empty;
 
-        [Column("intro")]
-        public object Intro { get; set; } = new List<object>();
-
         [Column("sections")]
-        public object Sections { get; set; } = new List<object>();
+        public string Sections { get; set; } = "[]";
+
+        [Column("intro")]
+        public string Intro { get; set; } = "[]";
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
