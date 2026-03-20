@@ -3,21 +3,15 @@ version: "3.8"
 services:
   # --- BACKEND .NET ---
   backend:
-    build:
-      context: ./backend_dotnet/BrainHack.API
-      dockerfile: Dockerfile
+    build: ./Backend
     container_name: backend
-    restart: unless-stopped
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY} # <-- AJOUTE CETTE LIGNE ICI
     ports:
       - "5282:5282"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:5282
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_KEY: ${SUPABASE_KEY}
-      Supabase__Url: ${SUPABASE_URL}
-      Supabase__AnonKey: ${SUPABASE_KEY}
-
+    # ... le reste ...
   # --- JEU 1 : IA ---
   jeu_ia:
     build: ./python_games
