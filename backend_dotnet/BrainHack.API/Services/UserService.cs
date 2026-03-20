@@ -33,6 +33,12 @@ namespace BrainHack.API.Services
             _config = config;
         }
 
+        private string? GetSupabaseUrl()
+            => (_config["SUPABASE_URL"] ?? _config["Supabase:Url"])?.TrimEnd('/');
+
+        private string? GetSupabaseKey()
+            => _config["SUPABASE_KEY"] ?? _config["Supabase:ServiceRoleKey"] ?? _config["Supabase:AnonKey"];
+
         public async Task<User?> UpdateAvatar(string userId, string avatarUrl)
         {
             var userResponse = await _supabase
@@ -118,8 +124,8 @@ namespace BrainHack.API.Services
                 return new UploadAvatarResult { Error = "Format non supporte. Utilise JPG, PNG ou WEBP." };
             }
 
-            var supabaseUrl = _config["Supabase:Url"]?.TrimEnd('/');
-            var supabaseKey = _config["Supabase:ServiceRoleKey"] ?? _config["Supabase:AnonKey"];
+            var supabaseUrl = GetSupabaseUrl();
+            var supabaseKey = GetSupabaseKey();
             var bucketName = _config["Supabase:AvatarBucket"] ?? "avatars";
             if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseKey))
             {
@@ -208,8 +214,8 @@ namespace BrainHack.API.Services
                 return;
             }
 
-            var supabaseUrl = _config["Supabase:Url"]?.TrimEnd('/');
-            var supabaseKey = _config["Supabase:ServiceRoleKey"] ?? _config["Supabase:AnonKey"];
+            var supabaseUrl = GetSupabaseUrl();
+            var supabaseKey = GetSupabaseKey();
             if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseKey))
             {
                 return;
@@ -235,8 +241,8 @@ namespace BrainHack.API.Services
 
         private async Task<string?> CreateSignedAvatarUrl(string bucket, string objectPath, int expiresInSeconds)
         {
-            var supabaseUrl = _config["Supabase:Url"]?.TrimEnd('/');
-            var supabaseKey = _config["Supabase:ServiceRoleKey"] ?? _config["Supabase:AnonKey"];
+            var supabaseUrl = GetSupabaseUrl();
+            var supabaseKey = GetSupabaseKey();
             if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseKey))
             {
                 return null;
@@ -296,7 +302,7 @@ namespace BrainHack.API.Services
 
         private string? BuildPublicAvatarUrl(string bucket, string objectPath)
         {
-            var supabaseUrl = _config["Supabase:Url"]?.TrimEnd('/');
+            var supabaseUrl = GetSupabaseUrl();
             if (string.IsNullOrWhiteSpace(supabaseUrl))
             {
                 return null;
@@ -330,7 +336,7 @@ namespace BrainHack.API.Services
                 return true;
             }
 
-            var supabaseUrl = _config["Supabase:Url"]?.TrimEnd('/');
+            var supabaseUrl = GetSupabaseUrl();
             if (!string.IsNullOrWhiteSpace(supabaseUrl)
                 && Uri.TryCreate(supabaseUrl, UriKind.Absolute, out var supabaseUri)
                 && !string.Equals(uri.Host, supabaseUri.Host, StringComparison.OrdinalIgnoreCase))

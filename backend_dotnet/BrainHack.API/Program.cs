@@ -10,8 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 // ============================================
 
 // Supabase
-var supabaseUrl = builder.Configuration["Supabase:Url"]!;
-var supabaseKey = builder.Configuration["Supabase:AnonKey"]!;
+var supabaseUrl = builder.Configuration["SUPABASE_URL"] ?? builder.Configuration["Supabase:Url"];
+var supabaseKey = builder.Configuration["SUPABASE_KEY"] ?? builder.Configuration["Supabase:AnonKey"];
+
+if (string.IsNullOrWhiteSpace(supabaseUrl) || string.IsNullOrWhiteSpace(supabaseKey))
+{
+    throw new InvalidOperationException("Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_KEY environment variables.");
+}
 
 var supabaseOptions = new Supabase.SupabaseOptions
 {
@@ -19,7 +24,14 @@ var supabaseOptions = new Supabase.SupabaseOptions
 };
 
 var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey, supabaseOptions);
-await supabaseClient.InitializeAsync();
+try
+{
+    await supabaseClient.InitializeAsync();
+}
+catch (Exception ex)
+{
+    throw new InvalidOperationException("Unable to initialize Supabase. Verify SUPABASE_URL and SUPABASE_KEY values and network connectivity.", ex);
+}
 builder.Services.AddSingleton(supabaseClient);
 
 // Services métier

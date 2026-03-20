@@ -11,12 +11,12 @@ services:
     ports:
       - "5282:5282"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5282
-      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
-      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
-      - Supabase__Url=https://itbtjaqjemcpnkfrsuhw.supabase.co
-      - Supabase__AnonKey=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5282
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      Supabase__Url: ${SUPABASE_URL}
+      Supabase__AnonKey: ${SUPABASE_KEY}
 
   # --- JEU 1 : IA ---
   jeu_ia:
@@ -25,8 +25,9 @@ services:
       - ./python_games/games/jeuxReelvsIA:/app
     command: streamlit run jeu.py --server.port 8501 --server.baseUrlPath /jeu
     environment:
-      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
-      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     restart: always
 
   # --- JEU 2 : QUIZ ---
@@ -36,8 +37,9 @@ services:
       - ./python_games/games/quizhistoireIA:/app
     command: streamlit run quizHistoireIA.py --server.port 8502 --server.baseUrlPath /quiz
     environment:
-      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
-      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     restart: always
 
   # --- SERVEUR WEB NGINX ---

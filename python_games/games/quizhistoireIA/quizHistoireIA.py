@@ -1,5 +1,11 @@
 import streamlit as st
 import random
+import os
+
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
 # Configuration de la page
 st.set_page_config(page_title="Quiz Histoire de l'IA", page_icon="🧠")
