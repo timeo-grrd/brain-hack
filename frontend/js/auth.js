@@ -40,6 +40,8 @@ function buildApiBaseCandidates() {
     return candidates;
 }
 
+const API_BASE_CANDIDATES = buildApiBaseCandidates();
+
 async function fetchWithApiFallback(endpoint, options) {
     let lastError = null;
     let lastResponse = null;
