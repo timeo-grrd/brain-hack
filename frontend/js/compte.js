@@ -9,29 +9,50 @@ function buildApiBaseCandidates() {
         if (!candidates.includes(normalized)) candidates.push(normalized);
     };
 
-    add(localStorage.getItem('brainhack_api_url'));
-    add('https://brain-hack.fr');
-    add('https://localhost:7258');
-
     const { protocol, hostname } = window.location;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+
+    // En local, on priorise toujours l'API locale avant la prod.
+    if (isLocalHost) {
         add(`${protocol}//${hostname}:5282`);
         add(`${protocol}//${hostname}:7258`);
+        add('https://localhost:7258');
     }
+
+    add(localStorage.getItem('brainhack_api_url'));
+
+    if (!isLocalHost) {
+        add('https://localhost:7258');
+    }
+
+    add('https://brain-hack.fr');
 
     return candidates;
 }
 
 async function fetchWithApiFallback(endpoint, options) {
     let lastError = null;
+    let lastResponse = null;
 
     for (const base of API_BASE_CANDIDATES) {
         try {
             const response = await fetch(`${base}${endpoint}`, options);
+            if (response.status === 404) {
+                lastResponse = response;
+                continue;
+            }
+
+            if (response.ok) {
+                localStorage.setItem('brainhack_api_url', base);
+            }
             return response;
         } catch (error) {
             lastError = error;
         }
+    }
+
+    if (lastResponse) {
+        return lastResponse;
     }
 
     throw lastError || new Error('API inaccessible');
