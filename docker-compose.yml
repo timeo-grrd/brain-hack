@@ -36,10 +36,21 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     restart: always
 
+  # --- BACKEND NODE (OpenAI image detection) ---
+  backend_node:
+    build: ./backend_node
+    container_name: backend_node
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      PORT: 3000
+    restart: always
+
   # --- SERVEUR WEB NGINX ---
   nginx:
     image: nginx:latest
     container_name: nginx
+    depends_on:
+      - backend_node
     ports:
       - "80:80"
       - "443:443"
