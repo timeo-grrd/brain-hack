@@ -1,6 +1,4 @@
-const API_BASE_CANDIDATES = buildApiBaseCandidates();
- 
-
+const API_URL = 'https://brain-hack.fr/api';
 const DEFAULT_AVATAR_POOL = [
     '../assets/greenAvatar.png',
     '../assets/blueAvatar.png',
@@ -90,6 +88,48 @@ function pickRandomAvatarUrl() {
     return DEFAULT_AVATAR_POOL[Math.floor(Math.random() * DEFAULT_AVATAR_POOL.length)];
 }
 
+function setAuthMode(mode) {
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+
+    if (!registerForm || !loginForm) return;
+
+    if (mode === 'login') {
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        return;
+    }
+
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const mode = String(new URLSearchParams(window.location.search).get('mode') || 'register')
+        .trim()
+        .toLowerCase();
+    setAuthMode(mode === 'login' ? 'login' : 'register');
+
+    const navLoginLink = document.querySelector('.nav-actions a[href*="mode=login"]');
+    const navRegisterLink = document.querySelector('.nav-actions a[href*="mode=register"]');
+
+    if (navLoginLink) {
+        navLoginLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            setAuthMode('login');
+            history.replaceState({}, '', 'authentification.html?mode=login');
+        });
+    }
+
+    if (navRegisterLink) {
+        navRegisterLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            setAuthMode('register');
+            history.replaceState({}, '', 'authentification.html?mode=register');
+        });
+    }
+});
+
 // Basculer entre inscription et connexion
 document.getElementById('showLogin')?.addEventListener('click', () => {
     document.getElementById('registerForm').classList.add('hidden');
@@ -124,7 +164,8 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
                 pseudo: pseudo,
                 email: email,
                 password: password,
-                role: role === 'professeur' ? 'teacher' : 'student'
+                role: role === 'professeur' ? 'teacher' : 'student',
+                avatarUrl: avatarUrl
             })
         });
 
@@ -139,7 +180,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
                 pseudo: data.pseudo,
                 email: data.email,
                 role: data.role,
-                avatarUrl: data.avatarUrl || avatarUrl,
+                avatarUrl: data.avatarUrl,
                 totalXp: data.totalXp
             }));
             localStorage.setItem('userData', localStorage.getItem('currentUser'));
@@ -160,9 +201,19 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
 document.getElementById('loginFormElement')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const inputs = e.target.querySelectorAll('input');
-    const email = inputs[0].value;
-    const password = inputs[1].value;
+    const formData = new FormData(e.target);
+    const email = String(formData.get('email') || '').trim().toLowerCase();
+    const password = String(formData.get('password') || '');
+
+    if (!email || !password) {
+        alert('Email et mot de passe requis');
+        return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        alert('Veuillez renseigner une adresse email valide');
+        return;
+    }
 
     try {
         const response = await fetchWithApiFallback('/auth/login', {
