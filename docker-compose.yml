@@ -1,6 +1,7 @@
-version: "3.9"
+version: "3.8"
 
 services:
+  # --- BACKEND .NET ---
   backend:
     build:
       context: ./backend_dotnet/BrainHack.API
@@ -10,9 +11,44 @@ services:
     ports:
       - "5282:5282"
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:5282
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_KEY: ${SUPABASE_KEY}
-      Supabase__Url: ${SUPABASE_URL}
-      Supabase__AnonKey: ${SUPABASE_KEY}
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5282
+      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
+      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+      - Supabase__Url=https://itbtjaqjemcpnkfrsuhw.supabase.co
+      - Supabase__AnonKey=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+
+  # --- JEU 1 : IA ---
+  jeu_ia:
+    build: ./python_games
+    volumes:
+      - ./python_games/games/jeuxReelvsIA:/app
+    command: streamlit run jeu.py --server.port 8501 --server.baseUrlPath /jeu
+    environment:
+      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
+      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+    restart: always
+
+  # --- JEU 2 : QUIZ ---
+  quiz_histoire:
+    build: ./python_games
+    volumes:
+      - ./python_games/games/quizhistoireIA:/app
+    command: streamlit run quizHistoireIA.py --server.port 8502 --server.baseUrlPath /quiz
+    environment:
+      - SUPABASE_URL=https://itbtjaqjemcpnkfrsuhw.supabase.co
+      - SUPABASE_KEY=sb_publishable_t7daTZTJDGAOAUnotzFyKg_fX5muQqN
+    restart: always
+
+  # --- SERVEUR WEB NGINX ---
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: always
