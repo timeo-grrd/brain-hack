@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # --- BACKEND .NET ---
   backend:
-    build: ./Backend
+    build: ./backend_dotnet
     container_name: backend
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
