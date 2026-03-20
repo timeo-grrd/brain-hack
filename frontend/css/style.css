@@ -2048,46 +2048,127 @@ body {
 }
 
 .medals-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 180px));
     justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
+    gap: 18px;
 }
 
 .medal-item {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    border-radius: 50%;
+    position: relative;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 16px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    gap: 8px;
+    padding: 14px 12px;
+    box-shadow: 0 6px 18px rgba(49, 46, 129, 0.12);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .medal-item:hover {
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(49, 46, 129, 0.2);
 }
 
-.medal-icon {
+.medal-visual {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.medal-visual::before {
+    content: attr(data-fallback-icon);
     font-size: 2rem;
-    filter: grayscale(100%);
-    opacity: 0.6;
-    transition: all 0.3s ease;
+    line-height: 1;
+    opacity: 0.85;
 }
 
-.medal-item:hover .medal-icon,
-.medal-item.unlocked .medal-icon {
-    filter: grayscale(0%);
-    opacity: 1;
+.medal-item.has-medal .medal-visual::before {
+    opacity: 0;
+}
+
+.medal-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 82%;
+    height: 82%;
+    object-fit: contain;
+    object-position: center;
+    display: none;
+}
+
+.medal-name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #312e81;
+    text-align: center;
+}
+
+.medal-tier-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #64748b;
 }
 
 .medal-item.unlocked {
-    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
-    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+.medal-item.tier-bronze .medal-visual {
+    background: linear-gradient(135deg, #f8c18f 0%, #cd7f32 100%);
+}
+
+.medal-item.tier-silver .medal-visual {
+    background: linear-gradient(135deg, #e8eef7 0%, #b8c2d3 100%);
+}
+
+.medal-item.tier-gold .medal-visual {
+    background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+}
+
+.medal-item.tier-bronze .medal-tier-label { color: #9a5f2f; }
+.medal-item.tier-silver .medal-tier-label { color: #64748b; }
+.medal-item.tier-gold .medal-tier-label { color: #b45309; }
+
+.medal-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 260px;
+    background: rgba(15, 23, 42, 0.92);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    white-space: pre-line;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 20;
+}
+
+.medal-item:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
 }
 
 .student-dashboard {
@@ -2700,9 +2781,9 @@ body {
     .account-page { padding: 100px 20px 40px; }
     .avatar-circle { width: 120px; height: 120px; }
     .avatar-circle svg { width: 60px; height: 60px; }
-    .medals-grid { gap: 25px; }
-    .medal-item { width: 60px; height: 60px; }
-    .medal-icon { font-size: 1.6rem; }
+    .medals-grid { grid-template-columns: 1fr; gap: 12px; }
+    .medal-item { max-width: 320px; width: 100%; justify-self: center; }
+    .medal-visual { width: 64px; height: 64px; }
     .dashboard-cards { grid-template-columns: 1fr; }
     .dashboard-articles-compare { grid-template-columns: 1fr; }
     .professor-grid { grid-template-columns: 1fr; }

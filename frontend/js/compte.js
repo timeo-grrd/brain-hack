@@ -49,6 +49,45 @@ const DEFAULT_AVATAR_POOL = [
     '../assets/limeAvatar.png'
 ];
 
+
+const MEDAL_DEFINITIONS = {
+    'real-vs-ai': {
+        label: 'Réel vs IA',
+        icon: '🧠',
+        gameKeys: ['real-vs-ai', 'detecteur-fake-news', 'deepfake-check'],
+        thresholds: { bronze: 4, silver: 8, gold: 12 },
+        assets: {
+            locked: '../assets/badges/real-vs-ai-locked.png',
+            bronze: '../assets/medailleBronze.png',
+            silver: '../assets/medailleSilver.png',
+            gold: '../assets/medailleGold.png'
+        }
+    },
+    'ai-history': {
+        label: 'Histoire IA',
+        icon: '📜',
+        gameKeys: ['ai-history', 'quiz-ia'],
+        thresholds: { bronze: 4, silver: 7, gold: 10 },
+        assets: {
+            locked: '../assets/badges/ai-history-locked.png',
+            bronze: '../assets/medailleBronze.png',
+            silver: '../assets/medailleSilver.png',
+            gold: '../assets/medailleGold.png'
+        }
+    },
+    'ball-blast': {
+        label: 'Ball Blast',
+        icon: '🎯',
+        gameKeys: ['ball-blast'],
+        thresholds: { bronze: 5, silver: 10, gold: 15 },
+        assets: {
+            locked: '../assets/badges/ball-blast-locked.png',
+            bronze: '../assets/medailleBronze.png',
+            silver: '../assets/medailleSilver.png',
+            gold: '../assets/medailleGold.png'
+        }
+    }
+};
 // ─── Helpers API ─────────────────────────────────────────────────────────────
 
 async function apiPost(endpoint, body) {
@@ -382,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (pseudoTextElement) pseudoTextElement.textContent = userData.pseudo || '';
 
         renderProfileAvatar(userData);
-        updateMedals(userData.medals || []);
+        updateMedals(getStudentProgress(userData));
         renderStudentDashboard(userData);
     }
 
@@ -1109,14 +1148,86 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    function updateMedals(unlockedMedals) {
-        document.querySelectorAll('.medal-item').forEach((item, index) => {
-            if (unlockedMedals.includes(index)) {
-                item.classList.add('unlocked');
-                item.title = 'Médaille débloquée !';
-            } else {
-                item.classList.remove('unlocked');
-                item.title = 'Médaille verrouillée';
+    function getBestScoreFromProgress(progress, gameKeys) {
+        const miniGames = progress && typeof progress.miniGames === 'object' ? progress.miniGames : null;
+        if (!miniGames) return 0;
+        let best = 0;
+        for (const key of gameKeys) {
+            const gameData = miniGames[key];
+            if (!gameData || typeof gameData !== 'object') continue;
+            const score = Number(gameData.bestScore || 0);
+            if (Number.isFinite(score) && score > best) best = score;
+        }
+        return best;
+    }
+
+    function getMedalTier(score, thresholds) {
+        if (score >= thresholds.gold) return 'gold';
+        if (score >= thresholds.silver) return 'silver';
+        if (score >= thresholds.bronze) return 'bronze';
+        return 'locked';
+    }
+
+    function getNextTierInfo(score, thresholds) {
+        if (score < thresholds.bronze) return { label: 'Bronze', target: thresholds.bronze };
+        if (score < thresholds.silver) return { label: 'Argent', target: thresholds.silver };
+        if (score < thresholds.gold) return { label: 'Or', target: thresholds.gold };
+        return null;
+    }
+
+    function updateMedals(progress) {
+        document.querySelectorAll('.medal-item[data-medal-game]').forEach(item => {
+            const medalKey = item.getAttribute('data-medal-game') || '';
+            const config = MEDAL_DEFINITIONS[medalKey];
+            if (!config) return;
+
+            const bestScore = getBestScoreFromProgress(progress, config.gameKeys);
+            const tier = getMedalTier(bestScore, config.thresholds);
+            const nextTier = getNextTierInfo(bestScore, config.thresholds);
+            const tierLabelMap = { locked: 'Verrouillé', bronze: 'Bronze', silver: 'Argent', gold: 'Or' };
+            const tierLabel = tierLabelMap[tier] || 'Verrouillé';
+
+            item.classList.remove('unlocked', 'tier-bronze', 'tier-silver', 'tier-gold');
+            if (tier !== 'locked') item.classList.add('unlocked');
+            if (tier === 'bronze') item.classList.add('tier-bronze');
+            if (tier === 'silver') item.classList.add('tier-silver');
+            if (tier === 'gold') item.classList.add('tier-gold');
+
+            const tooltip = nextTier
+                ? `${config.label}\nScore actuel: ${bestScore} pts\nProchain palier (${nextTier.label}): ${nextTier.target} pts\nEncore ${Math.max(0, nextTier.target - bestScore)} pts`
+                : `${config.label}\nScore actuel: ${bestScore} pts\nPalier max atteint: Or`;
+
+            item.setAttribute('data-tooltip', tooltip);
+            item.setAttribute('title', tooltip.replace(/\n/g, ' | '));
+            item.setAttribute('aria-label', `${config.label} - ${tierLabel}. ${tooltip.replace(/\n/g, '. ')}`);
+
+            const tierLabelElement = item.querySelector('.medal-tier-label');
+            if (tierLabelElement) tierLabelElement.textContent = tierLabel;
+
+            const medalVisual = item.querySelector('.medal-visual');
+            if (medalVisual) {
+                medalVisual.setAttribute('data-fallback-icon', config.icon || '🏅');
+            }
+
+            const medalImage = item.querySelector('.medal-image');
+            if (medalImage) {
+                const imageSource = config.assets[tier] || '';
+                if (imageSource) {
+                    medalImage.src = imageSource;
+                    medalImage.style.display = 'block';
+                    medalImage.onerror = function () {
+                        item.classList.remove('has-medal');
+                        medalImage.style.display = 'none';
+                    };
+                    medalImage.onload = function () {
+                        item.classList.add('has-medal');
+                        medalImage.style.display = 'block';
+                    };
+                } else {
+                    item.classList.remove('has-medal');
+                    medalImage.removeAttribute('src');
+                    medalImage.style.display = 'none';
+                }
             }
         });
     }
@@ -1149,7 +1260,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userData.medals.push(medalIndex);
             localStorage.setItem('currentUser', JSON.stringify(userData));
             localStorage.setItem('userData', JSON.stringify(userData));
-            if (document.querySelector('.account-page')) updateMedals(userData.medals);
+            if (document.querySelector('.account-page')) updateMedals(getStudentProgress(userData));
             showNotification('Nouvelle médaille débloquée ! 🏆', 'success');
             return true;
         }

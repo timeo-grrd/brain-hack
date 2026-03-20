@@ -11,6 +11,79 @@ const DEFAULT_AVATAR_POOL = [
     '../assets/limeAvatar.png'
 ];
 
+function buildApiBaseCandidates() {
+    const candidates = [];
+    const add = value => {
+        if (!value || typeof value !== 'string') return;
+        const normalized = value.trim().replace(/\/$/, '').replace(/\/api$/i, '');
+        if (!normalized) return;
+        if (!candidates.includes(normalized)) candidates.push(normalized);
+    };
+
+    add(localStorage.getItem('brainhack_api_url'));
+    add('https://brain-hack.fr');
+    add('https://localhost:7258');
+
+    const { protocol, hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        add(`${protocol}//${hostname}:5282`);
+        add(`${protocol}//${hostname}:7258`);
+    }
+
+    return candidates;
+}
+
+async function fetchWithApiFallback(endpoint, options) {
+    let lastError = null;
+    let lastResponse = null;
+
+    for (const base of API_BASE_CANDIDATES) {
+        try {
+            const response = await fetch(`${base}/api${endpoint}`, options);
+
+            // Un 404 indique souvent une mauvaise base API: on tente la suivante.
+            if (response.status === 404) {
+                lastResponse = response;
+                continue;
+            }
+
+            if (response.ok) {
+                localStorage.setItem('brainhack_api_url', base);
+            }
+            return response;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    if (lastResponse) {
+        return lastResponse;
+    }
+
+    throw lastError || new Error('API inaccessible');
+}
+
+async function readApiResponse(response) {
+    const fallback = { message: `Erreur HTTP ${response.status}` };
+    const contentType = response.headers.get('content-type') || '';
+
+    if (!contentType.toLowerCase().includes('application/json')) {
+        const text = await response.text();
+        if (!text) return fallback;
+        try {
+            return JSON.parse(text);
+        } catch {
+            return { ...fallback, message: text.slice(0, 220) };
+        }
+    }
+
+    try {
+        return await response.json();
+    } catch {
+        return fallback;
+    }
+}
+
 function pickRandomAvatarUrl() {
     return DEFAULT_AVATAR_POOL[Math.floor(Math.random() * DEFAULT_AVATAR_POOL.length)];
 }
@@ -84,7 +157,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
     const avatarUrl = pickRandomAvatarUrl();
 
     try {
-        const response = await fetch(`${API_URL}/auth/register`, {
+        const response = await fetchWithApiFallback('/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -96,7 +169,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
             })
         });
 
-        const data = await response.json();
+        const data = await readApiResponse(response);
 
         if (response.ok) {
             localStorage.setItem('brainhack_token', data.token);
@@ -117,7 +190,10 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
             alert(data.message || 'Erreur lors de l\'inscription');
         }
     } catch (err) {
-        alert('Impossible de contacter le serveur');
+        const isNetworkError = err instanceof TypeError;
+        alert(isNetworkError
+            ? 'Impossible de contacter le serveur API. Vérifie que le backend est lancé.'
+            : (err instanceof Error ? err.message : 'Erreur réseau inconnue'));
     }
 });
 
@@ -140,13 +216,13 @@ document.getElementById('loginFormElement')?.addEventListener('submit', async (e
     }
 
     try {
-        const response = await fetch(`${API_URL}/auth/login`, {
+        const response = await fetchWithApiFallback('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
 
-        const data = await response.json();
+        const data = await readApiResponse(response);
 
         if (response.ok) {
             localStorage.setItem('brainhack_token', data.token);
@@ -167,6 +243,9 @@ document.getElementById('loginFormElement')?.addEventListener('submit', async (e
             alert(data.message || 'Email ou mot de passe incorrect');
         }
     } catch (err) {
-        alert('Impossible de contacter le serveur');
+        const isNetworkError = err instanceof TypeError;
+        alert(isNetworkError
+            ? 'Impossible de contacter le serveur API. Vérifie que le backend est lancé.'
+            : (err instanceof Error ? err.message : 'Erreur réseau inconnue'));
     }
 });
