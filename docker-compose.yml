@@ -49,6 +49,7 @@ services:
       - "443:443"
     volumes:
       - ./frontend:/usr/share/nginx/html
+      - ./python_games:/usr/share/nginx/html/python_games
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: always
