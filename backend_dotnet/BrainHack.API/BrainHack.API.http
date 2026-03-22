@@ -1,6 +1,0 @@
-@BrainHack.API_HostAddress = https://brain-hack.fr
-
-GET {{BrainHack.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

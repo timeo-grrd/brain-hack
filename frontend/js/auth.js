@@ -1,4 +1,3 @@
-const API_URL = 'https://brain-hack.fr/api';
 const DEFAULT_AVATAR_POOL = [
     '../assets/greenAvatar.png',
     '../assets/blueAvatar.png',
@@ -11,65 +10,11 @@ const DEFAULT_AVATAR_POOL = [
     '../assets/limeAvatar.png'
 ];
 
-function buildApiBaseCandidates() {
-    const candidates = [];
-    const add = value => {
-        if (!value || typeof value !== 'string') return;
-        const normalized = value.trim().replace(/\/$/, '').replace(/\/api$/i, '');
-        if (!normalized) return;
-        if (!candidates.includes(normalized)) candidates.push(normalized);
-    };
 
-    const { protocol, hostname } = window.location;
-    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
-
-    if (isLocalHost) {
-        add(`${protocol}//${hostname}:5282`);
-        add(`${protocol}//${hostname}:7258`);
-        add('https://localhost:7258');
-    }
-
-    add(localStorage.getItem('brainhack_api_url'));
-
-    if (!isLocalHost) {
-        add('https://localhost:7258');
-    }
-
-    add('https://brain-hack.fr');
-
-    return candidates;
-}
-
-const API_BASE_CANDIDATES = buildApiBaseCandidates();
-
+// Nouvelle fonction fetch simple, sans fallback
 async function fetchWithApiFallback(endpoint, options) {
-    let lastError = null;
-    let lastResponse = null;
-
-    for (const base of API_BASE_CANDIDATES) {
-        try {
-            const response = await fetch(`${base}/api${endpoint}`, options);
-
-            // Un 404 indique souvent une mauvaise base API: on tente la suivante.
-            if (response.status === 404) {
-                lastResponse = response;
-                continue;
-            }
-
-            if (response.ok) {
-                localStorage.setItem('brainhack_api_url', base);
-            }
-            return response;
-        } catch (error) {
-            lastError = error;
-        }
-    }
-
-    if (lastResponse) {
-        return lastResponse;
-    }
-
-    throw lastError || new Error('API inaccessible');
+    // endpoint doit commencer par un slash, ex: /auth/register
+    return fetch(`${API_URL}${endpoint}`, options);
 }
 
 async function readApiResponse(response) {
@@ -166,7 +111,7 @@ document.getElementById('registerFormElement')?.addEventListener('submit', async
     const avatarUrl = pickRandomAvatarUrl();
 
     try {
-        const response = await fetchWithApiFallback('/auth/register', {
+        const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -225,7 +170,7 @@ document.getElementById('loginFormElement')?.addEventListener('submit', async (e
     }
 
     try {
-        const response = await fetchWithApiFallback('/auth/login', {
+        const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })

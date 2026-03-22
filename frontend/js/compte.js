@@ -1,4 +1,3 @@
-const API_BASE_CANDIDATES = buildApiBaseCandidates();
 
 function buildApiBaseCandidates() {
     const candidates = [];
@@ -58,17 +57,6 @@ async function fetchWithApiFallback(endpoint, options) {
     throw lastError || new Error('API inaccessible');
 }
 
-const DEFAULT_AVATAR_POOL = [
-    '../assets/greenAvatar.png',
-    '../assets/blueAvatar.png',
-    '../assets/redAvatar.png',
-    '../assets/yellowAvatar.png',
-    '../assets/purpleAvatar.png',
-    '../assets/orangeAvatar.png',
-    '../assets/cyanAvatar.png',
-    '../assets/pinkAvatar.png',
-    '../assets/limeAvatar.png'
-];
 
 
 const MEDAL_DEFINITIONS = {
