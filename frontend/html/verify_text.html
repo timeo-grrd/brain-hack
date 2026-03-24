@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BrainHack - Ton Certificat</title>
+    <title>Vérificateur de Texte - BrainHack</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,27 +11,18 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="../js/theme-loader.js"></script>
+    <script src="../js/config.js"></script>
   </head>
   <body>
-    <div class="page-bg">
-      <img src="../assets/cerveauTest.png" alt="" class="bg-circuit" />
-    </div>
-
-    <!-- Navigation -->
+    <!-- Navbar identique à Apropos.html (incluant le dropdown patché) -->
     <nav class="navbar">
       <div class="nav-container">
         <a href="index.html" class="logo">
           <div class="logo-icon">
-            <img
-              src="../assets/logo.png"
-              alt="Logo BrainHack"
-              class="logo-img"
-            />
+            <img src="../assets/logo.png" alt="Logo BrainHack" class="logo-img" />
           </div>
         </a>
-
         <div class="nav-links">
           <div class="close-btn">×</div>
           <!-- XP Counter mobile -->
@@ -49,7 +40,7 @@
               <a href="verify_audio.html" class="dropdown-item">Vérifier un son</a>
             </div>
           </div>
-          <div class="theme-wrapper" style="display:inline-flex; align-items:center; position:relative; padding:0; margin:0;">
+<div class="theme-wrapper" style="display:inline-flex; align-items:center; position:relative; padding:0; margin:0;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:0; pointer-events:none; color: var(--text-dark);">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
             </svg>
@@ -59,33 +50,14 @@
               <option value="deuteranopia">Thème : Deutéranopie</option>
               <option value="tritanopia">Thème : Tritanopie</option>
             </select>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="position:absolute; right:0; pointer-events:none; color: var(--text-dark);">
-              <path d="M7 10l5 5 5-5z"/>
-            </svg>
           </div>
         </div>
-
                 <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
 
         <div class="nav-actions">
-          <a
-            href="authentification.html?mode=login"
-            class="btn btn-outline-nav"
-          >
-            Connexion
-          </a>
-          <a href="authentification.html?mode=register" class="btn btn-primary">
-            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            S'inscrire
-          </a>
+          <a href="authentification.html?mode=login" class="btn-outline-nav">Connexion</a>
+          <a href="authentification.html?mode=register" class="btn btn-primary">S'inscrire</a>
         </div>
-
         <div class="burger-icon">
           <span></span>
           <span></span>
@@ -94,71 +66,40 @@
       </div>
     </nav>
 
-    <!-- Contenu principal -->
-    <main class="certif-page">
-      <!-- Formulaire -->
-      <div id="formulaire-section" class="certif-formulaire">
-        <h1 class="certif-main-title">Opération BrainHack Terminée !</h1>
-        <p class="certif-subtitle">Récupère ton accréditation officielle :</p>
-        <div class="certif-inputs">
-          <input
-            type="text"
-            id="input-prenom"
-            class="form-input"
-            placeholder="Prénom"
-          />
-          <input
-            type="text"
-            id="input-nom"
-            class="form-input"
-            placeholder="Nom"
-          />
-        </div>
-        <button class="btn btn-primary btn-full" onclick="preparerDiplome()">
-          Générer ma certification 🎓
-        </button>
-      </div>
-
-      <!-- Zone certificat -->
-      <div id="zone-certificat">
-        <div id="contenu-a-imprimer" class="certificat-design">
-          <div class="bordure-interieure">
-            <div class="certificat-corps">
-              <h1 class="titre-certif">Certification d'Expert</h1>
-              <div class="sous-titre">Enquêteur Anti-IA Niveau 1</div>
-              <p class="texte-intro">
-                Ce document certifie officiellement que :
-              </p>
-              <div id="affichage-nom" class="nom-joueur">PRÉNOM NOM</div>
-              <p class="texte-felicitations">
-                A brillamment terminé toutes les épreuves de l'opération
-                <strong>BrainHack</strong>.<br />
-                Il/Elle a su faire preuve d'un esprit critique exceptionnel pour
-                déjouer<br />
-                les pièges visuels et textuels des Intelligences Artificielles
-                génératives.
-              </p>
-              <div class="score-box">
-                SCORE : <span id="affichage-xp">0</span> XP
-              </div>
-            </div>
-            <div class="certificat-footer">
-              <div class="logo-brainhack">// Projet BrainHack</div>
-            </div>
+    <main>
+      <section class="apropos-hero" style="padding-top: 120px; padding-bottom: 2rem;">
+        <div class="container">
+          <div class="apropos-hero-content text-center">
+            <h1 class="apropos-title">Vérificateur de Texte IA</h1>
+            <p class="apropos-subtitle">Analysez n'importe quel texte pour détecter s'il a été généré par une Intelligence Artificielle.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <button
-        id="bouton-pdf"
-        class="btn btn-primary"
-        onclick="telechargerPDF()"
-      >
-        📥 Télécharger en PDF
-      </button>
+      <section class="container" style="max-width: 800px; margin-bottom: 4rem;">
+        <div style="background: var(--bg-light); padding: 2rem; border-radius: 16px; box-shadow: var(--shadow);">
+            <form id="verifyTextForm">
+                <label style="color: var(--text-dark); font-weight: 600; display: block; margin-bottom: 10px;">Collez votre texte ici :</label>
+                <textarea id="textInput" required rows="10" placeholder="Exemple : L'intelligence artificielle est un domaine de..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); font-family: inherit; font-size: 1rem; margin-bottom: 20px; resize: vertical; box-sizing: border-box;"></textarea>
+                
+                <label style="color: var(--text-dark); font-weight: 600; display: block; margin-bottom: 10px;">Langue :</label>
+                <select id="langSelect" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); font-family: inherit; font-size: 1rem; margin-bottom: 25px; box-sizing: border-box; cursor:pointer;">
+                    <option value="auto">Détection Automatique</option>
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center; border-radius: 12px;">Analyser le texte ⚡</button>
+            </form>
+
+            <div id="resultContainer" style="display: none; margin-top: 2rem; padding: 1.5rem; border-radius: 12px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+                <h3 style="color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">🔍 Résultats de l'Analyse</h3>
+                <div id="resultContent" style="color: var(--text-dark); line-height: 1.6;"></div>
+            </div>
+        </div>
+      </section>
     </main>
 
-    <!-- Footer -->
         <footer class="footer">
       <div class="footer-wave">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
@@ -200,9 +141,45 @@
     </footer>
 
     <script src="../js/script.js"></script>
-    <script src="../js/certificat.js"></script>
+    <script>
+      document.getElementById('verifyTextForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = document.getElementById('textInput').value;
+        const lang = document.getElementById('langSelect').value;
+        const resultBtn = e.target.querySelector('button');
+        resultBtn.innerHTML = 'Analyse en cours... <span class="loader" style="display:inline-block;width:15px;height:15px;border:2px solid #fff;border-bottom-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-left:10px;"></span>';
+        resultBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_URL}/api/check_text`, {
+                method: 'POST',
+                headers:{ 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, lang })
+            });
+            const data = await res.json();
+            
+            document.getElementById('resultContainer').style.display = 'block';
+            if (data.status === 'success') {
+                document.getElementById('resultContent').innerHTML = `
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--secondary);">
+                        <p style="margin:0; font-weight:600;">Réponse de l'API :</p>
+                        <p style="margin-top:10px; font-size:0.95rem;">${data.message.replace(/\\n/g, '<br>')}</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('resultContent').innerHTML = `<p style="color:red;">Erreur : ${data.message}</p>`;
+            }
+        } catch(err) {
+            alert("Erreur de communication API.");
+        } finally {
+            resultBtn.innerHTML = 'Analyser le texte ⚡';
+            resultBtn.disabled = false;
+        }
+      });
+    </script>
+    <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
     <script src="../js/header-auth.js"></script>
-    <script src="../js/chatbot.js"></script>
+  <script src="../js/chatbot.js"></script>
     <div class="mobile-nav-overlay"></div>
   </body>
 </html>

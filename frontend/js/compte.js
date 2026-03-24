@@ -365,6 +365,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (onAuthPage) {
+            if (userData && getToken()) {
+                const isProfessor = (userData.role || '').toLowerCase() === 'teacher'
+                    || (userData.role || '').toLowerCase() === 'professeur';
+                window.location.href = isProfessor ? 'dashboard_prof.html' : 'index.html';
+                return;
+            }
             showAuth(mode === 'login' ? 'login' : 'register');
         }
     }
@@ -466,12 +472,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!avatarCircle) return;
 
         const avatarUrl = typeof userData.avatarUrl === 'string' ? userData.avatarUrl.trim() : '';
-        const icon = avatarCircle.querySelector('svg');
-        let image = avatarCircle.querySelector('.profile-avatar-img');
+
+        // Cible en priorité l'image existante #currentAvatarImg (définie dans le HTML)
+        // pour éviter de créer une double image qui cause l'effet "masque gris"
+        let image = document.getElementById('currentAvatarImg')
+                 || avatarCircle.querySelector('.profile-avatar-img');
+
+        // Supprimer toute image dupliquée .profile-avatar-img si #currentAvatarImg existe aussi
+        const extraImg = avatarCircle.querySelector('.profile-avatar-img');
+        if (extraImg && document.getElementById('currentAvatarImg')) {
+            extraImg.remove();
+        }
 
         if (!avatarUrl) {
-            if (image) image.remove();
-            if (icon) icon.style.display = 'block';
+            if (image) image.src = '/hackathon/HackAThon/frontend/assets/logo.png';
             return;
         }
 
@@ -479,16 +493,17 @@ document.addEventListener('DOMContentLoaded', function () {
             image = document.createElement('img');
             image.className = 'profile-avatar-img';
             image.alt = 'Avatar utilisateur';
+            image.style.cssText = 'width:100%; height:100%; object-fit:cover; border-radius:50%; display:block;';
             avatarCircle.appendChild(image);
         }
 
-        image.src = avatarUrl;
-        if (icon) icon.style.display = 'none';
-
-        avatarCircle.setAttribute('role', 'button');
-        avatarCircle.setAttribute('tabindex', '0');
-        avatarCircle.setAttribute('title', 'Clique pour changer ton avatar');
-        avatarCircle.setAttribute('aria-label', 'Changer d avatar');
+        const nomFichier = avatarUrl.split('/').pop();
+        image.src = '/hackathon/HackAThon/frontend/assets/' + nomFichier;
+        image.style.objectFit = 'cover';
+        image.style.width = '100%';
+        image.style.height = '100%';
+        image.style.borderRadius = '50%';
+        image.style.display = 'block';
     }
 
     async function handleAvatarChangeClick() {

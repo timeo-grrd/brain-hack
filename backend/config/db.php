@@ -19,6 +19,8 @@ try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
     http_response_code(500);
-    echo $e->getMessage(); // Affiche l'erreur précise
+    header('Content-Type: application/json');
+    error_log("Erreur de connexion BDD : " . $e->getMessage()); // Log serveur uniquement
+    echo json_encode(['error' => 'Erreur interne de connexion à la base de données']);
     exit;
 }

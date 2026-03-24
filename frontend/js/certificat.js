@@ -30,7 +30,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const progress = getProgressForUser(user);
     const certificationRequiredIds = getCertificationRequiredArticleIds(user);
     const completion = computeCompletion(progress, certificationRequiredIds);
-    const points = Number(progress.totalPoints || 0);
+    let points = Number(progress.totalPoints || 0);
+
+    // ── XP Persistant (Hackathon) ──
+    async function syncXP() {
+        try {
+            const resp = await fetch('api_xp.php?action=get_xp');
+            const data = await resp.json();
+            if (data.total_xp !== undefined) {
+                points = data.total_xp;
+                if (xpOutput) xpOutput.textContent = String(points);
+            }
+        } catch (err) { console.error('Echec Sync XP pour certif:', err); }
+    }
 
     const fullName = getDisplayName(user);
     const splitName = splitDisplayName(fullName);
@@ -42,26 +54,28 @@ document.addEventListener('DOMContentLoaded', function() {
         lastNameInput.value = splitName.lastName;
     }
 
-    if (completion >= 100) {
-        if (subtitle) {
-            subtitle.textContent = 'Certification debloquee: ton nom est rempli automatiquement.';
+    syncXP().then(() => {
+        if (completion >= 100) {
+            if (subtitle) {
+                subtitle.textContent = 'Certification débloquée: ton nom est rempli automatiquement.';
+            }
+            preparerDiplome(true);
+        } else {
+            if (subtitle) {
+                subtitle.textContent = 'Cette certification se débloque automatiquement à 100% des articles obligatoires.';
+            }
+            if (generateButton) {
+                generateButton.disabled = true;
+                generateButton.title = 'Atteins 100% sur ton tableau de bord pour débloquer la certification.';
+            }
+            if (pdfButton) {
+                pdfButton.style.display = 'none';
+            }
+            if (certificateZone) {
+                certificateZone.style.display = 'none';
+            }
         }
-        preparerDiplome(true);
-    } else {
-        if (subtitle) {
-            subtitle.textContent = 'Cette certification se debloque automatiquement a 100% des articles obligatoires.';
-        }
-        if (generateButton) {
-            generateButton.disabled = true;
-            generateButton.title = 'Atteins 100% sur ton tableau de bord pour debloquer la certification.';
-        }
-        if (pdfButton) {
-            pdfButton.style.display = 'none';
-        }
-        if (certificateZone) {
-            certificateZone.style.display = 'none';
-        }
-    }
+    });
 
     function getCurrentUser() {
         try {
@@ -271,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nameOutput.textContent = certificateName.toUpperCase();
         }
         if (xpOutput) {
+            // S'assurer qu'on affiche bien les points synchronisés
             xpOutput.textContent = String(points);
         }
 

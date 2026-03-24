@@ -13,4 +13,5 @@ RewriteCond %{REQUEST_URI} !^/frontend/
 RewriteCond %{REQUEST_URI} !^/python_games/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond $1 !^frontend/
 RewriteRule ^(.*)$ frontend/$1 [L]

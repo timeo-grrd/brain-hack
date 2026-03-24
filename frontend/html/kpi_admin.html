@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Dashboard - BrainHack Admin</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png" />
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/kpi_admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/theme-loader.js"></script>
+</head>
+<body>
+    <!-- Navigation (Reused from site) -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><img src="../assets/logo.png" alt="Logo BrainHack" class="logo-img" /></div>
+            </a>
+            <div class="nav-links">
+                <div class="close-btn">×</div>
+          <!-- XP Counter mobile -->
+          <span class="header-xp-display" style="display:none;" id="mobile-xp-display">⚡ XP : <strong id="header-xp-counter-mobile">0</strong></span>
+                <a href="index.html" class="nav-link">Accueil</a>
+                <a href="games.html" class="nav-link">Mini-jeux</a>
+                <a href="Apropos.html" class="nav-link">À propos</a>
+                <div class="nav-dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">Vérificateur d'IA</a>
+                    <div class="dropdown-menu">
+                        <a href="verify_text.html" class="dropdown-item">Vérifier un texte</a>
+                        <a href="../api_ia/api-ia-bouton.html" class="dropdown-item">Vérifier une image</a>
+                        <a href="verify_video.html" class="dropdown-item">Vérifier une vidéo</a>
+                        <a href="verify_audio.html" class="dropdown-item">Vérifier un son</a>
+                    </div>
+                </div>
+            </div>
+                    <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
+
+        <div class="nav-actions">
+                <a href="authentification.html?mode=login" class="btn-outline-nav">Connexion</a>
+                <a href="authentification.html?mode=register" class="btn btn-primary">S'inscrire</a>
+            </div>
+            <div class="burger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="kpi-dashboard">
+        <div class="container">
+            <header class="kpi-header">
+                <div class="header-content-flex">
+                    <div class="header-text">
+                        <h1 class="kpi-title">Statistiques Globales</h1>
+                        <p class="kpi-subtitle">Suivi des performances et de l'engagement utilisateur</p>
+                    </div>
+                    <button id="btnExportCSV" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" style="width:18px; height:18px; margin-right:8px;">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Exporter le Rapport (CSV)
+                    </button>
+                </div>
+            </header>
+
+            <!-- Section 'Vue d'ensemble' -->
+            <section class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon icon-users">👥</div>
+                    <div class="stat-value" id="valUsers">0</div>
+                    <div class="stat-label">Total Utilisateurs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-xp">⭐</div>
+                    <div class="stat-value" id="valXP">0</div>
+                    <div class="stat-label">Total XP G&eacute;n&eacute;r&eacute;</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-games">🎮</div>
+                    <div class="stat-value" id="valGames">0</div>
+                    <div class="stat-label">Mini-jeux jou&eacute;s</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-ai">🤖</div>
+                    <div class="stat-value" id="valAIChecks">0</div>
+                    <div class="stat-label">V&eacute;rifications IA</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-certif">🎓</div>
+                    <div class="stat-value" id="valCertifications">0</div>
+                    <div class="stat-label">Certifications D&eacute;livr&eacute;es</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-success">✅</div>
+                    <div class="stat-value" id="valSuccessRate">0%</div>
+                    <div class="stat-label">Taux de R&eacute;ussite</div>
+                </div>
+            </section>
+
+            <!-- Section 'Graphiques D&eacute;taill&eacute;s' -->
+            <section class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">R&eacute;partition par Niveau Scolaire</h3>
+                    <canvas id="chartLevelDistribution"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Utilisation des Outils IA</h3>
+                    <canvas id="chartIAUsage"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Comp&eacute;tences Moyennes</h3>
+                    <canvas id="chartSkillsRadar"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">&Eacute;volution des scores (7j)</h3>
+                    <canvas id="chartScoreEvolution"></canvas>
+                </div>
+            </section>
+
+            <!-- Section Tableau -->
+            <section class="dashboard-table-section">
+                <div class="table-container">
+                    <h3 class="table-title">Derni&egrave;res Inscriptions</h3>
+                    <table class="kpi-table" id="tableRecentUsers">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Pseudo</th>
+                                <th>Classe</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyRecentUsers">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer (Reused from site) -->
+    <footer class="footer">
+      <div class="footer-wave">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+          <path d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z" fill="#a8c6fa" />
+        </svg>
+      </div>
+      <div class="footer-content">
+        <div class="container">
+          <div class="footer-grid-pro">
+            <div class="footer-col brand-col">
+              <h3 class="footer-logo-text">BrainHack</h3>
+              <p class="footer-tagline">Comprendre l'IA pour mieux la ma&icirc;triser.</p>
+            </div>
+            <div class="footer-col nav-col">
+              <h4>Navigation</h4>
+              <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="games.html">Mini-jeux</a></li>
+                <li><a href="Apropos.html">&Agrave; Propos</a></li>
+              </ul>
+            </div>
+            <div class="footer-col legal-col">
+              <h4>L&eacute;gal & Contact</h4>
+              <ul>
+                <li><a href="mentions-legales.html">Mentions l&eacute;gales</a></li>
+                <li><a href="mentions-legales.html">Confidentialit&eacute;</a></li>
+                <li><a href="mailto:contact@brainhack.fr">Nous contacter</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-divider"></div>
+          <div class="footer-bottom-pro">
+            <p class="footer-copyright">
+              <a href="kpi_admin.html" class="secret-admin-link">&copy; 2026 BrainHack. Tous droits r&eacute;serv&eacute;s.</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/kpi_charts.js"></script>
+    <script src="../js/header-auth.js"></script>
+    <div class="mobile-nav-overlay"></div>
+</body>
+</html>
+

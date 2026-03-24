@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Connexion & Inscription - BrainHack</title>
-    <link rel="icon" type="image/png" href="../assets/logo.png" />
+    <title>Vérificateur Vidéo - BrainHack</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <script src="../js/config.js"></script>
     <script src="../js/theme-loader.js"></script>
   </head>
   <body>
-    <!-- Navbar identique -->
+    <!-- Navbar identique (générée par script Node) -->
     <nav class="navbar">
       <div class="nav-container">
         <a href="index.html" class="logo">
@@ -41,7 +40,6 @@
             </select>
           </div>
         </div>
-
                 <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
 
         <div class="nav-actions">
@@ -56,74 +54,62 @@
       </div>
     </nav>
 
-    <main class="account-page">
-      <div class="container">
-        <!-- Section Auth -->
-        <section class="auth-section" id="authSection">
-          <!-- Formulaire d'Inscription -->
-          <div class="auth-form-container" id="registerForm">
-            <h2 class="auth-title">Inscription</h2>
-            <form class="auth-form" id="registerFormElement">
-              <div class="form-group">
-                <input type="text" class="form-input" placeholder="Votre pseudo" required />
-              </div>
-              <div class="form-group">
-                <input type="email" class="form-input" placeholder="Votre adresse mail" required />
-              </div>
-              
-              <div class="form-group role-selection">
-                <label class="radio-label">
-                  <input type="radio" name="role" value="student" checked />
-                  <span class="radio-custom"></span>
-                  <span class="radio-text">Élève</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" name="role" value="teacher" />
-                  <span class="radio-custom"></span>
-                  <span class="radio-text">Professeur</span>
-                </label>
-              </div>
+    <main>
+      <section class="apropos-hero" style="padding-top: 120px; padding-bottom: 2rem;">
+        <div class="container">
+          <div class="apropos-hero-content text-center">
+            <h1 class="apropos-title">Vérificateur Vidéo</h1>
+            <p class="apropos-subtitle">Détectez les deepfakes et les manipulations vidéo générées par l'IA.</p>
+          </div>
+        </div>
+      </section>
 
-              <!-- NOUVEAU : Choix de la classe -->
-              <div class="form-group" id="classSelectGroup">
-                <select name="id_classe" id="classSelect" class="form-input" required>
-                  <option value="" disabled selected>Choisissez votre classe</option>
-                </select>
-              </div>
-
-              <!-- NOUVEAU : Choix de l'avatar (CSS Grid propre) -->
-              <div class="form-group" id="avatarSelectGroup">
-                <label class="form-label" style="display:block; margin-bottom:10px; color:#fff;">Choisissez votre avatar :</label>
-                <div class="avatar-selection" id="avatarContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; justify-items: center;">
-                  <!-- Les avatars JS se chargeront ici, purgés de toute pollution -->
+      <section class="container" style="max-width: 800px; margin-bottom: 4rem;">
+        <div style="background: var(--bg-light); padding: 2rem; border-radius: 16px; box-shadow: var(--shadow); text-align:center;">
+            <form id="verifyVideoForm">
+                <div style="border: 2px dashed rgba(99, 102, 241, 0.4); padding: 3rem; border-radius: 12px; margin-bottom: 20px; background: rgba(99, 102, 241, 0.02);">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--primary)" style="margin-bottom: 15px;">
+                      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4zM15 16H5V8h10v8z"/>
+                    </svg>
+                    <h3 style="color: var(--text-dark); margin-bottom: 10px;">Uploadez une vidéo</h3>
+                    <p style="color: var(--text-light); margin-bottom: 20px; font-size: 0.9rem;">Formats acceptés : MP4, AVI, MOV (Max 50Mo)</p>
+                    <input type="file" id="videoInput" accept="video/mp4,video/x-m4v,video/*" required style="display: block; margin: 0 auto; color:var(--text-dark);" />
                 </div>
-              </div>
-
-              <div class="form-group">
-                <input type="password" class="form-input" placeholder="Votre mot de passe" required />
-              </div>
-              <button type="submit" class="btn btn-primary btn-full">S'inscrire</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; justify-content: center; border-radius: 12px;">Lancer l'analyse Deepfake ⚡</button>
             </form>
-          </div>
-
-          <!-- Formulaire de Connexion -->
-          <div class="auth-form-container hidden" id="loginForm">
-            <h2 class="auth-title">Connexion</h2>
-            <form class="auth-form" id="loginFormElement">
-              <div class="form-group">
-                <input type="email" name="email" autocomplete="username" class="form-input" placeholder="Votre adresse mail" required />
-              </div>
-              <div class="form-group">
-                <input type="password" name="password" autocomplete="current-password" class="form-input" placeholder="Votre mot de passe" required />
-              </div>
-              <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
-              <a href="#" class="forgot-password">Mot de passe oublié ?</a>
-            </form>
-          </div>
-        </section>
-      </div>
+            <div id="resultContainer" style="display: none; margin-top: 2rem; padding: 1.5rem; border-radius: 12px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); text-align: left;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">🔍 Résultats de l'Analyse</h3>
+                <div id="resultContent" style="color: var(--text-dark); line-height: 1.6;"></div>
+            </div>
+        </div>
+      </section>
     </main>
 
+    <script src="../js/script.js"></script>
+    <script>
+      document.getElementById('verifyVideoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.innerHTML = 'Analyse en cours... <span class="loader" style="display:inline-block;width:15px;height:15px;border:2px solid #fff;border-bottom-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-left:10px;"></span>';
+        btn.disabled = true;
+
+        try {
+            const formData = new FormData();
+            formData.append('video', document.getElementById('videoInput').files[0]);
+            
+            const res = await fetch(`${API_URL}/api/check_video`, { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = `<div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--secondary);"><p style="margin:0; font-weight:600;">Réponse de l'API :</p><p style="margin-top:10px; font-size:0.95rem;">${data.message.replace(/\\n/g, '<br>')}</p></div>`;
+        } catch(err) {
+            alert("Erreur de l'API vidéo.");
+        } finally {
+            btn.innerHTML = "Lancer l'analyse Deepfake ⚡";
+            btn.disabled = false;
+        }
+      });
+    </script>
         <footer class="footer">
       <div class="footer-wave">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
@@ -164,12 +150,11 @@
       </div>
     </footer>
 
-    <script src="../js/script.js"></script>
-    <script src="../js/auth.js"></script>
+    <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
     <script src="../js/header-auth.js"></script>
   <script src="../js/chatbot.js"></script>
     <div class="mobile-nav-overlay"></div>
-</body>
+  </body>
 </html>
 
 

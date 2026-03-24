@@ -1,17 +1,18 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BrainHack - Tous comprendre sur l'IA</title>
+    <title>BrainHack - Accueil</title>
     <link rel="icon" type="image/png" href="../assets/logo.png" />
-    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/style.css?v=10" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="../js/theme-loader.js"></script>
   </head>
   <body>
     <div class="page-bg">
@@ -82,13 +83,39 @@
         </a>
 
         <div class="nav-links">
+          <div class="close-btn">×</div>
+          <!-- XP Counter mobile -->
+          <span class="header-xp-display" style="display:none;" id="mobile-xp-display">⚡ XP : <strong id="header-xp-counter-mobile">0</strong></span>
           <a href="index.html" class="nav-link">Accueil</a>
           <a href="games.html" class="nav-link">Mini-jeux</a>
-          <a href="../api_ia/api-ia-bouton.html" class="nav-link"
-            >Vérifier une image</a
-          >
           <a href="Apropos.html" class="nav-link">À propos</a>
+          
+          <div class="nav-dropdown">
+            <a href="#" class="nav-link dropdown-toggle">Vérificateur d'IA</a>
+            <div class="dropdown-menu">
+              <a href="verify_text.html" class="dropdown-item">Vérifier un texte</a>
+              <a href="../api_ia/api-ia-bouton.html" class="dropdown-item">Vérifier une image</a>
+              <a href="verify_video.html" class="dropdown-item">Vérifier une vidéo</a>
+              <a href="verify_audio.html" class="dropdown-item">Vérifier un son</a>
+            </div>
+          </div>
+          <div class="theme-wrapper" style="display:inline-flex; align-items:center; position:relative; padding:0; margin:0;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:0; pointer-events:none; color: var(--text-dark);">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+            <select class="theme-selector" style="appearance:none; -webkit-appearance:none; background:transparent; border:none; outline:none; color:var(--text-dark); font-family:inherit; font-weight:400; font-size:1rem; cursor:pointer; padding-left:24px; padding-right:16px;">
+              <option value="normal">Thème : Normal</option>
+              <option value="protanopia">Thème : Protanopie</option>
+              <option value="deuteranopia">Thème : Deutéranopie</option>
+              <option value="tritanopia">Thème : Tritanopie</option>
+            </select>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="position:absolute; right:0; pointer-events:none; color: var(--text-dark);">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
         </div>
+
+        <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
 
         <div class="nav-actions">
           <a
@@ -109,13 +136,14 @@
           </a>
         </div>
 
-        <button class="mobile-menu-btn" aria-label="Menu">
+        <div class="burger-icon">
           <span></span>
           <span></span>
           <span></span>
-        </button>
+        </div>
       </div>
     </nav>
+
 
     <!-- Hero Section -->
     <section class="hero">
@@ -127,425 +155,248 @@
       </div>
     </section>
 
-    <!-- Featured Article -->
+    <!-- IA Featured Card - Zoom Card Expansion -->
     <section class="featured-section">
       <div class="container">
-        <article class="featured-card" id="ia-featured-card">
-          <div class="featured-image">
-            <img
-              src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=400&fit=crop"
-              alt="Réseau neuronal IA"
-            />
-            <div class="featured-overlay"></div>
-          </div>
-          <div class="featured-content">
-            <h2 class="featured-title">C'est quoi l'IA ?</h2>
-            <div class="featured-stats">
-              <span class="stat">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
-                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <span>0</span>
-              </span>
-              <span class="stat">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
-                    d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                0
-              </span>
+        <div class="ia-trigger-card-container">
+          <div class="modern-card ia-teaser-card" id="open-ia-modal" style="cursor: pointer;">
+            <div class="card-image-top">
+              <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&h=300&fit=crop" 
+                   alt="C'est quoi l'IA ?" class="loaded" />
+            </div>
+            <div class="card-body-content">
+              <span class="badge-status">Non lu</span>
+              <h3>C'est quoi l'IA ?</h3>
+              <p>Tout comprendre sur l'Intelligence Artificielle en 3 minutes et tester tes connaissances.</p>
+              
+              <div class="card-meta">
+                <span class="stat">❤️ <span>0</span></span>
+                <span class="stat">💬 <span>0</span></span>
+              </div>
+              
             </div>
           </div>
-        </article>
+        </div>
+
+        <!-- IA Modal Overlay -->
+        <div id="ia-modal-overlay" class="modal-overlay" style="display: none;">
+          <div class="modal-card-expanded modern-card">
+            <span class="close-modal-btn">&times;</span>
+            <div class="card-body-content" style="padding: 30px;">
+              <h3 style="margin-bottom: 20px; font-size: 2rem;">C'est quoi l'IA ? - Article Complet</h3>
+              <div class="card-meta" style="border-top: none; margin-top: 10px;">
+                <button id="btn-like-ia" class="action-btn">❤️ <span id="like-count-ia">0</span></button>
+                <span class="stat">💬 <span id="comment-count-ia-header">0</span></span>
+              </div>
+
+              <div class="ia-article-content">
+                <p>Tu entends ce mot 50 fois par jour : aux infos, au lyc&eacute;e, sur TikTok... Mais si on te demande de l'expliquer &agrave; tes grands-parents, tu dis quoi ?</p>
+                <p><strong>Brisons le mythe :</strong> l'Intelligence Artificielle n'a rien d'intelligent au sens humain. C'est un programme bas&eacute; sur des math&eacute;matiques ultra-pouss&eacute;es. Son but ? Imiter la fa&ccedil;on dont les humains apprennent.</p>
+
+                <h3 style="font-size: 1.3rem;">1. Comment on &laquo;&thinsp;&eacute;duque&thinsp;&raquo; une IA</h3>
+                <p>C'est ce qu'on appelle le <strong>Machine Learning</strong> : au lieu de lui &eacute;crire des r&egrave;gles, on lui montre 10 millions d'exemples et il apprend seul &agrave; d&eacute;tecter des patterns.</p>
+
+                <h3 style="font-size: 1.3rem;">2. Le carburant : la Data</h3>
+                <p>L'IA est comme une Formule 1 &mdash; sans carburant, elle ne sert &agrave; rien. Ce carburant, ce sont <strong>les donn&eacute;es</strong>. Pour entra&icirc;ner ChatGPT, les ing&eacute;nieurs lui ont fait lire presque tout internet.</p>
+
+                <h3 style="font-size: 1.3rem;">3. Les deux grandes familles</h3>
+                <div class="ia-table-wrap">
+                  <table class="ia-compare-table">
+                    <thead>
+                      <tr><th>Type</th><th>R&ocirc;le</th><th>Exemples</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>IA Analytique</strong></td>
+                        <td>Analyse &amp; recommande</td>
+                        <td>TikTok, Netflix, Google Maps</td>
+                      </tr>
+                      <tr>
+                        <td><strong>IA G&eacute;n&eacute;rative</strong></td>
+                        <td>Cr&eacute;e du contenu</td>
+                        <td>ChatGPT, Midjourney, Suno</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p><strong>En r&eacute;sum&eacute; :</strong> l'IA joue aux devinettes &agrave; la vitesse de la lumi&egrave;re&nbsp;!</p>
+              </div>
+
+              <!-- Mini-Quiz -->
+              <div class="ia-quiz" style="margin-top: 30px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                <h3 style="margin-bottom: 20px; font-size: 1.3rem;">🧠 Mini-Quiz &mdash; Teste tes connaissances&nbsp;!</h3>
+
+                <div class="quiz-question" data-question="1">
+                  <p class="quiz-question-label">1. Comment le Machine Learning apprend-il &agrave; reconna&icirc;tre un chat&nbsp;?</p>
+                  <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkAnswer(1, false, this)">En lisant des r&egrave;gles tap&eacute;es par un humain</button>
+                    <button class="quiz-btn" onclick="checkAnswer(1, true, this)">En analysant des millions d'exemples</button>
+                  </div>
+                  <p class="quiz-feedback" id="feedback-1"></p>
+                </div>
+
+                <div class="quiz-question" data-question="2" style="margin-top: 20px;">
+                  <p class="quiz-question-label">2. Quel est le carburant indispensable de l'IA&nbsp;?</p>
+                  <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkAnswer(2, false, this)">L'&eacute;lectricit&eacute; magique</button>
+                    <button class="quiz-btn" onclick="checkAnswer(2, true, this)">Les donn&eacute;es (La&nbsp;Data)</button>
+                  </div>
+                  <p class="quiz-feedback" id="feedback-2"></p>
+                </div>
+
+                <p id="total-xp-display" style="margin-top: 20px; font-weight: 700; color: var(--primary);"></p>
+              </div>
+
+              <!-- Dynamic Comments Section -->
+              <div class="article-comments-section" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+                <h3>💬 Commentaires (<span id="comment-count-ia">0</span>)</h3>
+                
+                <div class="comment-form" style="display: flex; gap: 10px; margin-bottom: 20px; margin-top: 15px;">
+                  <textarea id="new-comment-text" placeholder="Ajoute un commentaire..." 
+                            style="flex-grow: 1; border-radius: 8px; border: 1px solid #ccc; padding: 12px; resize: vertical; min-height: 80px; font-family: inherit; font-size: 0.95rem;"></textarea>
+                  <button id="btn-submit-comment" 
+                          style="background: var(--primary); color: white; border: none; border-radius: 8px; padding: 0 25px; cursor: pointer; font-weight: 600; transition: transform 0.2s;">
+                    Envoyer
+                  </button>
+                </div>
+                
+                <div id="comments-list" style="display: flex; flex-direction: column; gap: 15px;">
+                  <!-- Dynamic comments will be injected here -->
+                  <p id="no-comments-msg" style="color: #888; font-style: italic; text-align: center; margin-top: 10px;">Soyez le premier &agrave; commenter cet article&nbsp;!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
 
     <!-- Articles Grid -->
     <section class="articles-section">
       <div class="container">
-        <div class="articles-grid">
-          <!-- Article 1 -->
-          <article class="article-card" id="phone-intelligence-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop"
-                alt="Relations chat IA"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Ton téléphone est-il plus intelligent que toi ?
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
+        <!-- NOUVEAU : Barre de filtrage par classe -->
+        <div class="filter-bar" style="margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: rgba(255, 255, 255, 0.85); padding: 1rem 1.5rem; border-radius: 12px; border: 2px solid var(--primary); box-shadow: var(--shadow);">
+          <h2 style="color: var(--text-dark); margin: 0; font-size: 1.3rem;">D&eacute;couvre les articles pour ta classe</h2>
+          <select id="articleClassFilter" class="form-input" style="max-width: 250px; cursor: pointer; margin: 0; background-color: white; color: var(--text-dark); border: 1px solid var(--secondary);">
+            <option value="" style="color: black;">Toutes les classes</option>
+          </select>
+        </div>
 
-          <!-- Article 2 -->
-          <article class="article-card" id="chatgpt-lies-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=400&h=300&fit=crop"
-                alt="ChatGPT écran"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Quand ChatGPT te ment droit dans les yeux (et pourquoi)
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 3 -->
-          <article class="article-card" id="manipulation-online-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop"
-                alt="Femme manipulée"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Tu fais (probablement) déjà l'objet de manipulation en ligne...
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 4 -->
-          <article class="article-card" id="deepfake-detect-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop"
-                alt="Deepfake téléphone"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Comment repérer un contenu deepfake ?
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 5 -->
-          <article class="article-card" id="ai-cheats-games-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&h=300&fit=crop"
-                alt="IA vidéo"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Comment l'IA triche dans tes flux vidéo préférés
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 6 -->
-          <article class="article-card" id="streamer-fake-video-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop"
-                alt="Streamer"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Cette vidéo de ton streamer préféré n'existe pas.
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 7 -->
-          <article class="article-card" id="homework-ai-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop"
-                alt="Filtre beauté"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Faire ses devoirs avec l'IA : l'astuce de génie ou le pire piège
-                ?
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 8 -->
-          <article class="article-card" id="future-job-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop"
-                alt="Robot humanoïde"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                Un robot va-t-il piquer ton futur métier ?
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span></span>729</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Article 9 -->
-          <article class="article-card" id="ai-replace-humanity-card">
-            <div class="article-image">
-              <img
-                src="https://images.unsplash.com/photo-1676299081847-824916de030a?w=400&h=300&fit=crop"
-                alt="IA mains"
-              />
-            </div>
-            <div class="article-content">
-              <h3 class="article-title">
-                L'IA va-t-elle remplacer l'humanité ?
-              </h3>
-              <div class="article-stats">
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-heart"></use></svg>
-                  <span>0</span>
-                </span>
-                <span class="stat">
-                  <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
-                  <span>0</span>
-                </span>
-              </div>
-            </div>
-          </article>
+        <div class="articles-grid" id="mainArticlesGrid">
+          <!-- Articles will be loaded here -->
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+        <footer class="footer">
       <div class="footer-wave">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-          <path
-            d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"
-            fill="#a8c6fa"
-          />
+          <path d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z" fill="#a8c6fa" />
         </svg>
       </div>
       <div class="footer-content">
         <div class="container">
-          <div class="footer-grid">
-            <!-- Brand -->
-            <div class="footer-brand">
-              <a href="index.html" class="logo">
-                <div class="logo-icon">
-                  <img
-                    src="../assets/logo.png"
-                    alt="Logo BrainHack"
-                    class="logo-img"
-                  />
-                </div>
-              </a>
+          <div class="footer-grid-pro">
+            <div class="footer-col brand-col">
+              <h3 class="footer-logo-text">BrainHack</h3>
+              <p class="footer-tagline">Comprendre l'IA pour mieux la ma&icirc;triser.</p>
             </div>
-
-            <!-- Navigation -->
-            <div class="footer-links">
+            <div class="footer-col nav-col">
               <h4>Navigation</h4>
               <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="games.html">Mini-jeux</a></li>
-                <li>
-                  <a href="../api_ia/api-ia-bouton.html"
-                    >Vérifier une image</a
-                  >
-                </li>
-                <li><a href="Apropos.html">À propos</a></li>
+                <li><a href="Apropos.html">&Agrave; Propos</a></li>
               </ul>
             </div>
-
-            <!-- Contact -->
-            <div class="footer-links">
-              <h4>Contact</h4>
+            <div class="footer-col legal-col">
+              <h4>L&eacute;gal & Contact</h4>
               <ul>
-                <li>
-                  <a href="mailto:contact@brainhack.fr">contact@brainhack.fr</a>
-                </li>
-                <li><a href="tel:+33123456789">+33 1 23 45 67 89</a></li>
-                <li>
-                  <a href="Apropos.html">Qui sommes-nous ?</a>
-                </li>
-                <li>
-                  <a href="mentions-legales.html"
-                    >Mentions légales</a
-                  >
-                </li>
+                <li><a href="mentions-legales.html">Mentions l&eacute;gales</a></li>
+                <li><a href="mentions-legales.html">Confidentialit&eacute;</a></li>
+                <li><a href="mailto:contact@brainhack.fr">Nous contacter</a></li>
               </ul>
-            </div>
-
-            <!-- Newsletter + Réseaux -->
-            <div class="footer-newsletter">
-              <h4>Newsletter</h4>
-              <p class="newsletter-desc">
-                Reçois les dernières actus sur l'IA !
-              </p>
-              <div class="newsletter-form">
-                <input
-                  type="email"
-                  class="newsletter-input"
-                  placeholder="Ton email..."
-                />
-                <button class="btn btn-primary newsletter-btn">OK</button>
-              </div>
-              <h4 style="margin-top: 25px">Suivez-nous</h4>
-              <div class="social-links">
-                <a href="#" aria-label="Facebook">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="social-icon"
-                  >
-                    <path
-                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-                    />
-                  </svg>
-                </a>
-                <a href="#" aria-label="Instagram">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="social-icon"
-                  >
-                    <path
-                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
-                    />
-                  </svg>
-                </a>
-              </div>
             </div>
           </div>
-
-          <!-- Bas du footer -->
-          <div class="footer-bottom">
+          <div class="footer-divider"></div>
+          <div class="footer-bottom-pro">
             <p class="footer-copyright">
-              © 2026 BrainHack. Tous droits réservés.
+              <a href="kpi_admin.html" class="secret-admin-link">&copy; 2026 BrainHack. Tous droits r&eacute;serv&eacute;s.</a>
             </p>
-            <div class="footer-legal">
-              <a href="mentions-legales.html"
-                >Mentions légales</a
-              >
-              <a href="mentions-legales.html">CGU</a>
-              <a href="mentions-legales.html"
-                >Politique de confidentialité</a
-              >
-            </div>
           </div>
         </div>
       </div>
     </footer>
 
+    <!-- Modal IA Complete -->
+    <div id="modal-ia" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="ia-article-content">
+          <h2>C&rsquo;est quoi l&rsquo;IA ?</h2>
+          <p>Tu entends ce mot 50 fois par jour : aux infos, au lyc&eacute;e, sur TikTok... "L'IA a fait ci", "L'IA va faire &ccedil;a". Mais si on te demande d'expliquer ce que c'est exactement &agrave; tes grands-parents, tu dis quoi ? Un robot invisible ? Un super-cerveau dans le cloud ?</p>
+          <p><strong>Brisons le mythe tout de suite :</strong> l'Intelligence Artificielle n'a rien d'intelligent au sens humain. C'est un programme informatique g&eacute;ant, bas&eacute; sur des math&eacute;matiques et des statistiques ultra-pouss&eacute;es. Son but ?
+ Imiter la fa&ccedil;on dont les humains apprennent et r&eacute;solvent des probl&egrave;mes.</p>
+          
+          <h3>1. Comment on "&eacute;duque" une IA (Le test du petit chat)</h3>
+          <p>Pour comprendre l'IA, il faut comprendre comment on la programme. C'est ce qu'on appelle le <strong>Machine Learning</strong> (l'apprentissage automatique). Imaginons que tu veuilles apprendre &agrave; un ordinateur &agrave; reconna&icirc;tre une photo de chat.</p>
+          <ul>
+              <li><strong>La vieille m&eacute;thode (sans IA) :</strong> Le programmeur devait &eacute;crire des milliers de r&egrave;gles manuelles. "Un chat a deux oreilles pointues, des moustaches..." Le probl&egrave;me ? Si tu lui montres un chat sans poils ou de dos, l'ordinateur plante.</li>
+              <li><strong>La m&eacute;thode IA (Machine Learning) :</strong> Le programmeur ne donne aucune r&egrave;gle. Il montre &agrave; l'ordinateur 10 millions de photos de chats et de chiens, en lui disant qui est qui. En analysant les pixels, l'ordinateur va "deviner" tout seul les points communs math&eacute;matiques. Il a appris par l'exemple.</li>
+          </ul>
+
+          <h3>2. Son carburant : Tes donn&eacute;es (La "Data")</h3>
+          <p>L'IA est comme une Formule 1. Le moteur est surpuissant, mais sans carburant, il ne sert &agrave; rien. Le carburant de l'IA, ce sont <strong>les donn&eacute;es</strong> (textes, images, vid&eacute;os, musiques).</p>
+          <p><em>La stat vertigineuse :</em> Pour entra&icirc;ner un mod&egrave;le comme ChatGPT, les ing&eacute;nieurs lui ont fait "lire" quasiment tout ce qui existe sur internet. S'il fallait que tu lises tout ce que cette IA a ingurgit&eacute;, il te faudrait plus de 20 000 ans sans jamais dormir ! C'est pour ça que l'IA a explos&eacute; r&eacute;cemment : on produit des milliards de donn&eacute;es chaque jour avec nos smartphones.</p>
+
+          <h3>3. Les deux grandes familles de l'IA</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+              <tr style="background-color: var(--primary); color: white;">
+                  <th style="padding: 10px; border: 1px solid #ccc;">Type d'IA</th>
+                  <th style="padding: 10px; border: 1px solid #ccc;">Ce qu'elle fait</th>
+                  <th style="padding: 10px; border: 1px solid #ccc;">O&ugrave; tu la trouves</th>
+              </tr>
+              <tr>
+                  <td style="padding: 10px; border: 1px solid #ccc;"><strong>L'IA Analytique</strong> (L'ancienne)</td>
+                  <td style="padding: 10px; border: 1px solid #ccc;">Elle analyse des donn&eacute;es pour faire des choix ou des recommandations.</td>
+                  <td style="padding: 10px; border: 1px solid #ccc;">Algorithme TikTok, recommandations Netflix, Google Maps, reconnaissance faciale.</td>
+              </tr>
+              <tr>
+                  <td style="padding: 10px; border: 1px solid #ccc;"><strong>L'IA G&eacute;n&eacute;rative</strong> (La nouvelle star)</td>
+                  <td style="padding: 10px; border: 1px solid #ccc;">Elle cr&eacute;e de nouvelles choses (texte, image, son) &agrave; partir de ce qu'elle a appris.</td>
+                  <td style="padding: 10px; border: 1px solid #ccc;">ChatGPT (texte), Midjourney (images), Suno (musique).</td>
+              </tr>
+          </table>
+          <p><strong>En r&eacute;sum&eacute; :</strong> L'IA, ce n'est pas un cerveau magique. C'est un algorithme hyper-entra&icirc;n&eacute; qui joue aux devinettes &agrave; la vitesse de la lumi&egrave;re !</p>
+        </div>
+
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz : As-tu bien suivi ? (Gagne de l'XP !)</h3>
+          <div id="quiz-container">
+              <p><strong>1. Comment le Machine Learning apprend-il &agrave; reconna&icirc;tre un chat ?</strong></p>
+              <button onclick="event.stopPropagation(); checkAnswer(1, false, this)">En lisant des r&egrave;gles tap&eacute;es par un humain</button>
+              <button onclick="event.stopPropagation(); checkAnswer(1, true, this)">En analysant des millions d'exemples</button>
+              <p id="feedback-1" style="font-weight: bold; margin-bottom: 15px;"></p>
+
+              <p><strong>2. Quel est le carburant indispensable de l'IA ?</strong></p>
+              <button onclick="event.stopPropagation(); checkAnswer(2, false, this)">L'&eacute;lectricit&eacute; magique</button>
+              <button onclick="event.stopPropagation(); checkAnswer(2, true, this)">Les donn&eacute;es (La Data)</button>
+              <p id="feedback-2" style="font-weight: bold; margin-bottom: 15px;"></p>
+          </div>
+          <p id="total-xp-display" style="font-size: 1.2em; color: green; font-weight: bold;"></p>
+        </div>
+      </div>
+    </div>
+
     <script src="../js/config.js"></script>
-    <script src="../js/script.js"></script>
-    <script>
-      // Menu mobile responsive
-      document.addEventListener('DOMContentLoaded', function () {
-        const menuBtn = document.querySelector('.mobile-menu-btn');
-        const navLinks = document.querySelector('.nav-links');
-        menuBtn.addEventListener('click', function () {
-          navLinks.classList.toggle('active');
-          menuBtn.classList.toggle('active');
-        });
-        // Fermer le menu au clic sur un lien (optionnel)
-        document.querySelectorAll('.nav-link').forEach(function (link) {
-          link.addEventListener('click', function () {
-            if (window.innerWidth <= 900) {
-              navLinks.classList.remove('active');
-              menuBtn.classList.remove('active');
-            }
-          });
-        });
-      });
-    </script>
+    <script src="../js/script.js?v=10"></script>
+    <script src="../js/header-auth.js"></script>
+    <script src="../js/chatbot.js"></script>
+    <div class="mobile-nav-overlay"></div>
   </body>
 </html>
-
 
 
 

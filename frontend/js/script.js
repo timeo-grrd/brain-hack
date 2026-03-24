@@ -1,7 +1,276 @@
 // Suivi centralise de la progression eleve (articles + mini-jeux).
+
+// ── Mini-Quiz Logic (Phase 11) ─────────────────────────────────────────
+// État INDÉPENDANT par question – chaque question a son propre verrou
+const quizState = { 1: false, 2: false };
+let userXP = 0;
+
+/**
+ * updateHeaderXP() - Centralized XP fetch and display
+ */
+async function updateHeaderXP() {
+    try {
+        const response = await fetch('api_xp.php?action=get_xp');
+        const data = await response.json();
+        
+        if (data && data.total_xp !== undefined) {
+            const xp = data.total_xp || 0;
+            
+            // Desktop & Mobile counters
+            const counters = document.querySelectorAll('#header-xp-counter, #header-xp-counter-mobile');
+            counters.forEach(el => { el.textContent = xp; });
+
+            // Stats page display
+            const xpDisplay = document.getElementById('total-xp-display');
+            if (xpDisplay) xpDisplay.textContent = '🏆 Total XP en base : ' + xp;
+        }
+    } catch (err) { 
+        // Silently fail if API not found (e.g. on pages in subdirectories)
+        console.warn('Sync XP non disponible sur cette page.'); 
+    }
+}
+
+/**
+ * checkAnswer(questionNumber, isCorrect, btnElement)
+ * Gère UNE seule question à la fois.
+ */
+window.checkAnswer = async function(questionNumber, isCorrect, btnElement) {
+    if (quizState[questionNumber]) return;
+
+    const feedbackEl = document.getElementById('feedback-' + questionNumber);
+    if (!feedbackEl) return;
+
+    const questionBlock = btnElement.closest('.quiz-question');
+    if (questionBlock) {
+        questionBlock.querySelectorAll('button').forEach(btn => {
+            btn.disabled = true;
+        });
+    }
+
+    if (isCorrect) {
+        btnElement.style.backgroundColor = '#4CAF50';
+        btnElement.style.color = 'white';
+        btnElement.style.borderColor = '#4CAF50';
+        feedbackEl.textContent = '✅ Bonne réponse ! +5 XP';
+        feedbackEl.className = 'quiz-feedback correct';
+
+        // ── XP Persistant (Hackathon Upgrade) ──
+        try {
+            const resp = await fetch('api_xp.php?action=add_xp&amount=5');
+            const data = await resp.json();
+            if (data.status === 'success') {
+                updateHeaderXP();
+            }
+        } catch (err) { console.error('Erreur Gain XP:', err); }
+    } else {
+        btnElement.style.backgroundColor = '#f44336';
+        btnElement.style.color = 'white';
+        btnElement.style.borderColor = '#f44336';
+        feedbackEl.textContent = '❌ Faux ! Relis bien le texte au-dessus.';
+        feedbackEl.className = 'quiz-feedback wrong';
+    }
+
+    quizState[questionNumber] = true;
+};
+
+// ── Zoom Card IA Modal Logic (Phase 11) ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const teaserCard = document.getElementById('open-ia-modal');
+    const overlay    = document.getElementById('ia-modal-overlay');
+    const closeBtn   = overlay ? overlay.querySelector('.close-modal-btn') : null;
+
+    if (teaserCard && overlay) {
+        teaserCard.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Appliquer le badge "Lu" au clic
+            if (window.BrainHackProgress) {
+                window.BrainHackProgress.trackArticleRead('ia-featured-card');
+                const badge = teaserCard.querySelector('.badge-status');
+                if (badge) {
+                    badge.textContent = 'Lu';
+                    badge.style.backgroundColor = '#4caf50';
+                    badge.style.color = 'white';
+                }
+            }
+
+            // Charger les interactions (Likes & Commentaires)
+            loadIAInteractions();
+        });
+
+        const closeModal = () => {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        };
+
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.style.display === 'flex') {
+                closeModal();
+            }
+        });
+
+        // --- Logic: Likes ---
+        const btnLike = document.getElementById('btn-like-ia');
+        if (btnLike) {
+            btnLike.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('api_interactions.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'like', article_id: 'ia-featured-card' })
+                    });
+                    const data = await response.json();
+                    if (data.status) {
+                        document.getElementById('like-count-ia').textContent = data.total;
+                        btnLike.classList.toggle('liked', data.status === 'liked');
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                } catch (err) { console.error('Erreur Like:', err); }
+            });
+        }
+
+        // --- Logic: Comments ---
+        const btnComment = document.getElementById('btn-submit-comment');
+        const commentText = document.getElementById('new-comment-text');
+        if (btnComment && commentText) {
+            btnComment.addEventListener('click', async () => {
+                const text = commentText.value.trim();
+                if (!text) return;
+
+                try {
+                    const response = await fetch('api_interactions.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'comment', article_id: 'ia-featured-card', text: text })
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        commentText.value = '';
+                        addCommentToUI(data.comment, true);
+                        updateCommentCount(1);
+                        
+                        // Scroll to the new comment
+                        const list = document.getElementById('comments-list');
+                        list.firstChild.scrollIntoView({ behavior: 'smooth' });
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                } catch (err) { console.error('Erreur Comment:', err); }
+            });
+        }
+    }
+
+    async function loadIAInteractions() {
+        try {
+            // Utilisation de query param pour le GET
+            const response = await fetch('api_interactions.php?article_id=ia-featured-card');
+            const data = await response.json();
+            
+            // Update counts
+            const likeEl = document.getElementById('like-count-ia');
+            if (likeEl) likeEl.textContent = data.likes || 0;
+            
+            const commentCount = data.comments ? data.comments.length : 0;
+            updateCommentCount(null, commentCount);
+
+            // Populate list
+            const list = document.getElementById('comments-list');
+            const noMsg = document.getElementById('no-comments-msg');
+            list.innerHTML = ''; 
+            if (noMsg) list.appendChild(noMsg);
+
+            if (data.comments && data.comments.length > 0) {
+                if (noMsg) noMsg.style.display = 'none';
+                data.comments.forEach(c => addCommentToUI(c));
+            } else {
+                if (noMsg) noMsg.style.display = 'block';
+            }
+        } catch (err) { console.error('Erreur Load:', err); }
+    }
+
+    function addCommentToUI(comment, prepend = false) {
+        const list = document.getElementById('comments-list');
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        
+        const dateStr = new Date(comment.created_at).toLocaleDateString('fr-FR', {
+            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+
+        div.innerHTML = `
+            <div class="comment-header">
+                <span class="comment-author">
+                    ${comment.pseudo} 
+                    <span class="comment-date">${dateStr}</span>
+                </span>
+                ${isAdmin() ? `<button class="delete-comment-btn" onclick="deleteComment(${comment.id}, this)">🗑️ Supprimer</button>` : ''}
+            </div>
+            <div class="comment-text">${comment.comment_text}</div>
+        `;
+
+        if (prepend) {
+            const noMsg = document.getElementById('no-comments-msg');
+            if (noMsg) noMsg.style.display = 'none';
+            list.prepend(div);
+        } else {
+            list.appendChild(div);
+        }
+    }
+
+    function updateCommentCount(delta, fixedValue = null) {
+        const spanMain = document.getElementById('comment-count-ia');
+        const spanHeader = document.getElementById('comment-count-ia-header');
+        
+        if (!spanMain && fixedValue === null) return;
+        
+        let current = fixedValue !== null ? fixedValue : parseInt(spanMain ? spanMain.textContent || "0" : "0");
+        if (delta !== null && fixedValue === null) current += delta;
+
+        if (spanMain) spanMain.textContent = current;
+        if (spanHeader) spanHeader.textContent = current;
+    }
+
+    function isAdmin() {
+        try {
+            const user = getConnectedUser();
+            return user && user.role === 'admin';
+        } catch (e) { return false; }
+    }
+
+    window.deleteComment = async function(id, btn) {
+        if (!confirm('Voulez-vous vraiment supprimer ce commentaire ?')) return;
+        try {
+            const response = await fetch('api_interactions.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_comment', id: id })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                btn.closest('.comment-item').remove();
+                updateCommentCount(-1);
+            } else {
+                alert(data.error || 'Erreur lors de la suppression');
+            }
+        } catch (err) { console.error('Erreur Delete:', err); }
+    };
+
+    // Initial load of XP
+    updateHeaderXP();
+});
+
+
 (function () {
     const STORAGE_KEY = 'brainhack_student_progress_v1';
-    const GAME_API_BASE_URL = 'http://localhost/HackAThon/backend_php';
+    // Utilise GAME_API_BASE_URL défini globalement dans config.js
 
     function getStorage() {
         try {
@@ -199,45 +468,75 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
-    function ensureMobileAccountEntry(isConnected) {
+    function ensureMobileAuthLinks(isConnected) {
         const navLinks = document.querySelector('.nav-links');
         if (!navLinks) return;
 
-        let mobileAccountLink = navLinks.querySelector('[data-mobile-account-link="true"]');
-        if (!mobileAccountLink) {
-            mobileAccountLink = document.createElement('a');
-            mobileAccountLink.className = 'nav-link nav-link-mobile-account';
-            mobileAccountLink.dataset.mobileAccountLink = 'true';
-            navLinks.appendChild(mobileAccountLink);
-        }
+        // Remove existing mobile auth links if any
+        navLinks.querySelectorAll('.nav-link-mobile-auth').forEach(el => el.remove());
+
+        const createMobileLink = (text, href, isPrimary = false) => {
+            const link = document.createElement('a');
+            link.className = 'nav-link nav-link-mobile-auth' + (isPrimary ? ' btn-mobile-primary' : ' btn-mobile-outline');
+            link.href = href;
+            link.textContent = text;
+            return link;
+        };
+
+        const authContainer = document.createElement('div');
+        authContainer.className = 'nav-link-mobile-auth mobile-auth-container';
+        authContainer.style.marginTop = '2rem';
+        authContainer.style.paddingTop = '1.5rem';
+        authContainer.style.borderTop = '1px solid rgba(0,0,0,0.06)';
+        authContainer.style.display = 'flex';
+        authContainer.style.flexDirection = 'column';
+        authContainer.style.gap = '12px';
+        authContainer.style.width = '100%';
 
         if (isConnected) {
-            mobileAccountLink.href = getHeaderAccountPath();
-            mobileAccountLink.textContent = 'Mon compte';
-            return;
+            const connectedUser = getConnectedUser();
+            const isProfessor = connectedUser && (connectedUser.role || '').toLowerCase() === 'teacher';
+            const accountPath = isProfessor ? '/hackathon/HackAThon/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
+            
+            authContainer.appendChild(createMobileLink(isProfessor ? 'Mon Dashboard' : 'Mon compte', accountPath, true));
+            
+            const logoutLink = createMobileLink('Déconnexion', '#');
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userData');
+                localStorage.removeItem('token');
+                localStorage.removeItem('brainhack_token');
+                window.location.href = getHeaderAccountPath().replace('compte.html', 'authentification.html?mode=login');
+            });
+            authContainer.appendChild(logoutLink);
+        } else {
+            authContainer.appendChild(createMobileLink('Se connecter', 'authentification.html?mode=login'));
+            authContainer.appendChild(createMobileLink("S'inscrire", 'authentification.html?mode=register', true));
         }
 
-        mobileAccountLink.href = 'authentification.html?mode=login';
-        mobileAccountLink.textContent = 'Se connecter';
+        navLinks.appendChild(authContainer);
     }
 
     function applyHeaderSessionState() {
         const connectedUser = getConnectedUser();
         if (!connectedUser) {
-            ensureMobileAccountEntry(false);
+            ensureMobileAuthLinks(false);
             return;
         }
         const navActions = document.querySelector('.nav-actions');
         if (!navActions) {
-            ensureMobileAccountEntry(true);
+            ensureMobileAuthLinks(true);
             return;
         }
         const links = navActions.querySelectorAll('a');
         const displayName = connectedUser.name || connectedUser.pseudo || 'Utilisateur';
-        const accountPath = getHeaderAccountPath();
+        const isProfessor = (connectedUser.role || '').toLowerCase() === 'teacher';
+        const accountPath = isProfessor ? '/hackathon/HackAThon/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
         if (links[0]) {
             links[0].href = accountPath;
-            links[0].textContent = 'Mon compte';
+            links[0].textContent = isProfessor ? 'Mon Dashboard' : 'Mon compte';
         }
         if (links[1]) {
             links[1].href = '#';
@@ -264,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         sessionBadge.textContent = `Connecté: ${displayName}`;
 
-        ensureMobileAccountEntry(true);
+        ensureMobileAuthLinks(true);
     }
 
     applyHeaderSessionState();
@@ -536,14 +835,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 loadAllLikeCounts();
 
-    // ── Écouteurs cartes (UNE seule boucle) ──────────────────────────────────
+    // ── Écouteurs cartes ──────────────────────────────────
 
-    document.querySelectorAll('.article-card, .featured-card').forEach(card => {
+    function attachCardEvents(card) {
+        if (!card) return;
         card.setAttribute('role', 'button');
         card.setAttribute('tabindex', '0');
 
         card.addEventListener('click', () => {
             trackCardRead(card);
+            // Skip modal for the special IA card since it has a native accordion
+            if (card.id === 'ia-featured-card') return;
             openModal(card.id);
         });
 
@@ -554,25 +856,87 @@ loadAllLikeCounts();
                 openModal(card.id);
             }
         });
+
+        // Tilt 3D
+        card.addEventListener('mousemove', function (e) {
+            if (this.classList.contains('is-expanded')) return;
+            const rect = this.getBoundingClientRect();
+            const rotateX = (e.clientY - rect.top - rect.height / 2) / 20;
+            const rotateY = (rect.width / 2 - (e.clientX - rect.left)) / 20;
+            this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+        card.addEventListener('mouseleave', function () {
+            this.style.transform = '';
+        });
+    }
+
+    document.querySelectorAll('.article-card, .featured-card').forEach(card => {
+        attachCardEvents(card);
     });
 
 
     // ── Menu mobile ──────────────────────────────────────────────────────────
 
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function () {
-            this.classList.toggle('active');
-            navLinks.classList.toggle('active');
+    // ── NOUVEAU MENU BURGER RADICAL ───────────────────────────────────────────
+
+    // ── NEW ROBUST MOBILE MENU ───────────────────────────────────────────
+    function initMobileMenu() {
+        const burgerIcon = document.querySelector('.burger-icon');
+        const navLinks = document.querySelector('.nav-links');
+        const overlay = document.querySelector('.mobile-nav-overlay');
+
+        if (!burgerIcon || !navLinks || !overlay) {
+            console.warn("Mobile menu elements missing:", { burgerIcon, navLinks, overlay });
+            return;
+        }
+
+        const toggleMenu = () => {
+            const isOpen = navLinks.classList.toggle('active');
+            overlay.classList.toggle('active');
+            burgerIcon.classList.toggle('open');
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
+
+        const closeMenu = () => {
+            navLinks.classList.remove('active');
+            overlay.classList.remove('active');
+            burgerIcon.classList.remove('open');
+            document.body.style.overflow = '';
+        };
+
+        burgerIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        overlay.addEventListener('click', closeMenu);
+
+        // Links: Close menu and allow redirection (NO preventDefault)
+        const navItems = navLinks.querySelectorAll('.nav-link, .dropdown-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Si c'est un lien de navigation (pas un toggle de dropdown), on ferme
+                if (!item.classList.contains('dropdown-toggle')) {
+                    closeMenu();
+                }
+            });
+        });
+
+        // Dropdown toggle mobile (accordion style)
+        const toggles = document.querySelectorAll('.dropdown-toggle');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    const parent = this.closest('.nav-dropdown');
+                    if (parent) {
+                        parent.classList.toggle('active');
+                    }
+                }
+            });
         });
     }
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenuBtn?.classList.remove('active');
-            navLinks?.classList.remove('active');
-        });
-    });
+
+    initMobileMenu();
 
 
     // ── Animations scroll ────────────────────────────────────────────────────
@@ -732,19 +1096,7 @@ function commentHTML(comment) {
 }
 
 
-    // ── Tilt 3D hover ────────────────────────────────────────────────────────
-
-    document.querySelectorAll('.article-card, .featured-card').forEach(card => {
-        card.addEventListener('mousemove', function (e) {
-            const rect = this.getBoundingClientRect();
-            const rotateX = (e.clientY - rect.top - rect.height / 2) / 20;
-            const rotateY = (rect.width / 2 - (e.clientX - rect.left)) / 20;
-            this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-        });
-        card.addEventListener('mouseleave', function () {
-            this.style.transform = '';
-        });
-    });
+    // (Tilt géré dans attachCardEvents)
 
 
     // ── Lazy loading images ──────────────────────────────────────────────────
@@ -786,7 +1138,156 @@ function commentHTML(comment) {
         });
     });
 
+    // ── Filtrage Dynamique & Rendu HTML des Articles ─────────────────────────
+
+    const classFilter = document.getElementById('articleClassFilter');
+    const articlesGrid = document.getElementById('mainArticlesGrid');
+
+    if (classFilter && articlesGrid) {
+        const fallbackImages = {
+            'phone-intelligence-card': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+            'chatgpt-lies-card': 'https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=400&h=300&fit=crop',
+            'manipulation-online-card': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
+            'deepfake-detect-card': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop',
+            'ai-cheats-games-card': 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=400&h=300&fit=crop',
+            'streamer-fake-video-card': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop',
+            'homework-ai-card': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=300&fit=crop',
+            'future-job-card': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop',
+            'ai-replace-humanity-card': 'https://images.unsplash.com/photo-1676299081847-824916de030a?w=400&h=300&fit=crop'
+        };
+
+        const renderArticles = async (classId) => {
+            try {
+                // Fetch de notre nouvelle API
+                const url = `${GAME_API_BASE_URL}/get_articles.php` + (classId ? `?id_classe=${classId}` : '');
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Erreur réseau");
+                const articles = await res.json();
+                
+                // Vider la grille HTML complète
+                articlesGrid.innerHTML = '';
+                
+                if (articles.length === 0) {
+                    articlesGrid.innerHTML = '<p style="color:white; text-align:center; width:100%;">Aucun article pour cette sélection.</p>';
+                    return;
+                }
+
+                // Génération des cartes
+                articles.forEach((article, index) => {
+                    // On exclut la grosse carte vedette pour ne pas la dupliquer en dur
+                    if (article.slug === 'ia-featured-card') return;
+
+                    const imgSrc = fallbackImages[article.slug] || 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=300&fit=crop';
+                    
+                    const el = document.createElement('article');
+                    el.className = 'article-card';
+                    el.id = article.slug;
+                    el.innerHTML = `
+                        <div class="article-image">
+                          <img src="${imgSrc}" alt="${article.title}" class="loaded" />
+                        </div>
+                        <div class="article-content">
+                          <h3 class="article-title">${article.title}</h3>
+                          <div class="article-stats">
+                            <span class="stat">
+                              <svg class="icon-stat"><use href="#icon-heart"></use></svg>
+                              <span>0</span>
+                            </span>
+                            <span class="stat">
+                              <svg class="icon-stat"><use href="#icon-bubble"></use></svg>
+                              <span>0</span>
+                            </span>
+                          </div>
+                        </div>
+                    `;
+                    
+                    // Animations d'entrée dynamiques
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(30px)';
+                    el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                    
+                    articlesGrid.appendChild(el);
+                    
+                    // Réattacher les événements interactifs (Click, Hover, Tags)
+                    attachCardEvents(el);
+                    observer.observe(el);
+                });
+
+                // Re-calculer les likes/commentaires et l'état lu pour ces nouvelles cartes
+                updateArticleReadBadges();
+                loadAllLikeCounts();
+
+            } catch (err) {
+                console.error("Impossible de charger les articles filtrés : ", err);
+            }
+        };
+
+        // Initialisation globale
+        const initHomeFilter = async () => {
+            try {
+                // Remplir le select de classes
+                const res = await fetch(`${API_URL}/auth/get_classes`);
+                const classesObj = await res.json();
+                if (Array.isArray(classesObj)) {
+                    classesObj.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.id;
+                        opt.textContent = c.nom_groupe;
+                        opt.style.color = "black";
+                        classFilter.appendChild(opt);
+                    });
+                }
+                
+                // Pré-sélectionner la classe de l'user connecté
+                const user = getConnectedUser();
+                let initialClassId = '';
+                if (user && user.id_classe) {
+                    initialClassId = user.id_classe;
+                    classFilter.value = initialClassId;
+                }
+
+                // Charger immédiatement selon la pré-sélection
+                await renderArticles(initialClassId);
+
+                // Event Listener HTML sur le dropdown
+                classFilter.addEventListener('change', (e) => {
+                    renderArticles(e.target.value);
+                });
+
+            } catch(e) {}
+        };
+        initHomeFilter();
+    }
+
+    // ── Gestionnaire du Thème Daltonien ──────────────────────────────────────
+    const themeSelectors = document.querySelectorAll('.theme-selector');
+    themeSelectors.forEach(selector => {
+        selector.addEventListener('change', function() {
+            const newTheme = this.value;
+            
+            // Retirer les ancies thèmes
+            document.documentElement.classList.remove('theme-normal', 'theme-protanopia', 'theme-deuteranopia', 'theme-tritanopia');
+            document.body.classList.remove('theme-normal', 'theme-protanopia', 'theme-deuteranopia', 'theme-tritanopia');
+            
+            // Ajouter le nouveau thème
+            if (newTheme !== 'normal') {
+                document.documentElement.classList.add('theme-' + newTheme);
+                document.body.classList.add('theme-' + newTheme);
+            }
+            
+            localStorage.setItem('activeTheme', newTheme);
+            
+            // Sync all other selectors
+            themeSelectors.forEach(sel => {
+                if(sel !== this) sel.value = newTheme;
+            });
+        });
+    });
+
     console.log('🧠 BrainHack chargé avec succès !');
 });
+
+
+
 
 
