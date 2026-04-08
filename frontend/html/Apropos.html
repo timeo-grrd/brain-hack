@@ -1,10 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>À Propos - BrainHack</title>
-    <link rel="icon" type="image/png" href="../assets/logo.png" />
+    <title>À propos - BrainHack</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,9 +11,12 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script src="../js/theme-loader.js"></script>
   </head>
   <body>
+    <div class="page-bg">
+      <img src="../assets/cerveauTest.png" alt="" class="bg-circuit" />
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
@@ -28,47 +30,17 @@
           </div>
         </a>
         <div class="nav-links">
-          <div class="close-btn">×</div>
-          <!-- XP Counter mobile -->
-          <span class="header-xp-display" style="display:none;" id="mobile-xp-display">⚡ XP : <strong id="header-xp-counter-mobile">0</strong></span>
           <a href="index.html" class="nav-link">Accueil</a>
           <a href="games.html" class="nav-link">Mini-jeux</a>
-          <a href="Apropos.html" class="nav-link">À propos</a>
-          
-          <div class="nav-dropdown">
-            <a href="#" class="nav-link dropdown-toggle">Vérificateur d'IA</a>
-            <div class="dropdown-menu">
-              <a href="verify_text.html" class="dropdown-item">Vérifier un texte</a>
-              <a href="../api_ia/api-ia-bouton.html" class="dropdown-item">Vérifier une image</a>
-              <a href="verify_video.html" class="dropdown-item">Vérifier une vidéo</a>
-              <a href="verify_audio.html" class="dropdown-item">Vérifier un son</a>
-            </div>
-          </div>
-          <div class="theme-wrapper" style="display:inline-flex; align-items:center; position:relative; padding:0; margin:0;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:0; pointer-events:none; color: var(--text-dark);">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-            </svg>
-            <select class="theme-selector" style="appearance:none; -webkit-appearance:none; background:transparent; border:none; outline:none; color:var(--text-dark); font-family:inherit; font-weight:400; font-size:1rem; cursor:pointer; padding-left:24px; padding-right:16px;">
-              <option value="normal">Thème : Normal</option>
-              <option value="protanopia">Thème : Protanopie</option>
-              <option value="deuteranopia">Thème : Deutéranopie</option>
-              <option value="tritanopia">Thème : Tritanopie</option>
-            </select>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="position:absolute; right:0; pointer-events:none; color: var(--text-dark);">
-              <path d="M7 10l5 5 5-5z"/>
-            </svg>
-          </div>
-        </div>
-
-                <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
-
-        <div class="nav-actions">
-          <a
-            href="authentification.html?mode=login"
-            class="btn btn-outline-nav"
+          <a href="../api_ia/api-ia-bouton.html" class="nav-link"
+            >Vérifier une image</a
           >
-            Connexion
-          </a>
+          <a href="Apropos.html" class="nav-link active">À propos</a>
+        </div>
+        <div class="nav-actions">
+          <a href="authentification.html?mode=login" class="btn-outline-nav"
+            >Connexion</a
+          >
           <a href="authentification.html?mode=register" class="btn btn-primary">
             <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
               <path
@@ -80,12 +52,11 @@
             S'inscrire
           </a>
         </div>
-
-        <div class="burger-icon">
+        <button class="mobile-menu-btn" aria-label="Menu">
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </button>
       </div>
     </nav>
 
@@ -94,61 +65,74 @@
       <section class="apropos-hero">
         <div class="container">
           <div class="apropos-hero-content">
-            <h1 class="apropos-title">Apprendre l'IA avec BrainHack</h1>
+            <h1 class="apropos-title">Qui sommes-nous ?</h1>
             <p class="apropos-subtitle">
-              Une plateforme interactive pour démystifier l'intelligence artificielle 
-              et développer votre esprit critique.
+              Une équipe de passionnés qui croit que comprendre l'IA, c'est le
+              premier pas pour ne pas se laisser manipuler par elle.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- Projet -->
+      <!-- Présentation -->
       <section class="apropos-section">
         <div class="container">
           <div class="apropos-project">
             <div class="apropos-project-text">
-              <h2 class="section-title">Notre mission</h2>
+              <h2 class="section-title">Le projet BrainHack</h2>
               <p>
-                BrainHack est né d'une volonté simple : rendre l'intelligence 
-                artificielle accessible à tous, sans jargon technique complexe.
+                BrainHack est née d'un constat simple : l'intelligence
+                artificielle est partout, mais personne ne nous apprend vraiment
+                à la décrypter.
               </p>
               <p>
-                Nous croyons que la meilleure façon d'apprendre est de pratiquer. 
-                C'est pourquoi nous avons créé des défis interactifs et des 
-                mini-jeux pour tester vos connaissances.
+                Alors on a créé BrainHack. Une plateforme qui rend l'IA
+                accessible, compréhensible et qui t'apprend à développer ton
+                esprit critique face à ces nouvelles technologies.
               </p>
-              <div class="apropos-project-stats">
-                <div class="stat-card">
-                  <span class="stat-number">100%</span>
-                  <span class="stat-label">Interactif</span>
-                </div>
-                <div class="stat-card">
-                  <span class="stat-number">24/7</span>
-                  <span class="stat-label">Disponible</span>
-                </div>
-                <div class="stat-card">
-                  <span class="stat-number">Gratuit</span>
-                  <span class="stat-label">Pour tous</span>
-                </div>
-              </div>
+              <p>
+                À travers des articles, des mini-jeux et des certifications, on
+                te donne les clés pour naviguer dans un monde où l'IA redéfinit
+                les règles.
+              </p>
             </div>
-            <div class="apropos-project-visual">
-               <img src="../assets/logo.png" alt="BrainHack Visual" style="width: 100%; opacity: 0.8;">
+            <div class="apropos-project-stats">
+              <div class="stat-card">
+                <span class="stat-number">9+</span>
+                <span class="stat-label">Articles publiés</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-number">3</span>
+                <span class="stat-label">Mini-jeux</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Gratuit</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Valeurs -->
-      <section class="apropos-section" style="background: rgba(255,255,255,0.3);">
+      <section class="apropos-section apropos-mission">
         <div class="container">
-          <h2 class="section-title text-center">Nos Valeurs</h2>
+          <h2 class="section-title text-center">Nos valeurs</h2>
           <div class="valeurs-grid">
+            <div class="valeur-card">
+              <div class="valeur-icon">🧠</div>
+              <h3>Éduquer</h3>
+              <p>
+                Rendre l'IA compréhensible pour tous, sans jargon technique
+                inutile.
+              </p>
+            </div>
             <div class="valeur-card">
               <div class="valeur-icon">🔍</div>
               <h3>Éveiller</h3>
-              <p>Développer l'esprit critique face aux contenus générés par l'IA.</p>
+              <p>
+                Développer l'esprit critique face aux contenus générés par l'IA.
+              </p>
             </div>
             <div class="valeur-card">
               <div class="valeur-icon">🎮</div>
@@ -160,11 +144,6 @@
               <h3>Partager</h3>
               <p>Une communauté ouverte où chacun progresse à son rythme.</p>
             </div>
-            <div class="valeur-card">
-              <div class="valeur-icon">⚖️</div>
-              <h3>Éthique & Transparence</h3>
-              <p>Nous croyons en une intelligence artificielle éthique. Notre but est de démystifier les algorithmes et les deepfakes pour que la technologie reste un outil au service de l'humain, sans manipulation.</p>
-            </div>
           </div>
         </div>
       </section>
@@ -173,42 +152,77 @@
       <section class="apropos-section">
         <div class="container">
           <h2 class="section-title text-center">L'équipe</h2>
+          <p class="section-subtitle text-center">
+            Des étudiants passionnés par la tech et la pédagogie.
+          </p>
           <div class="equipe-grid">
-            <!-- Teddy -->
             <div class="membre-card">
               <div class="membre-photo">
-                <img src="../assets/blueAvatar.png" alt="BARRAUD TEDDY" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <img
+                  src="../assets/cap1.jpg"
+                  alt="BARRAUD TEDDY"
+                  onerror="
+                    this.style.display = 'none';
+                    this.nextElementSibling.style.display = 'flex';
+                  "
+                />
               </div>
               <h3 class="membre-nom">BARRAUD TEDDY</h3>
               <span class="membre-role">Chef de Projet</span>
               <p class="membre-bio">Maitrise de Unity et des pixels art</p>
             </div>
-            <!-- Kelvya -->
             <div class="membre-card">
               <div class="membre-photo">
-                <img src="../assets/limeAvatar.png" alt="KELVYA ALANDJI" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <img
+                  src="../assets/femme.jpg"
+                  alt="KELVYA ALANDJI"
+                  onerror="
+                    this.style.display = 'none';
+                    this.nextElementSibling.style.display = 'flex';
+                  "
+                />
+                <div class="membre-avatar-fallback">?</div>
               </div>
               <h3 class="membre-nom">KELVYA ALANDJI</h3>
               <span class="membre-role">Développeur Front-end</span>
-              <p class="membre-bio">Passionné par le design et l'expérience utilisateur.</p>
+              <p class="membre-bio">
+                Passionné par le design et l'expérience utilisateur.
+              </p>
             </div>
-            <!-- Ludwig -->
             <div class="membre-card">
               <div class="membre-photo">
-                <img src="../assets/limeAvatar.png" alt="POISSON LUDWIG" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <img
+                  src="../assets/cap2.jpg"
+                  alt="POISSON LUDWIG"
+                  onerror="
+                    this.style.display = 'none';
+                    this.nextElementSibling.style.display = 'flex';
+                  "
+                />
               </div>
               <h3 class="membre-nom">POISSON LUDWIG</h3>
               <span class="membre-role">Architecte réseau</span>
-              <p class="membre-bio">Maitrise le déploiement et la gestion des serveurs.</p>
+              <p class="membre-bio">
+                Maitrise le déploiement et la gestion des serveurs.
+              </p>
             </div>
-            <!-- Timéo -->
             <div class="membre-card">
               <div class="membre-photo">
-                <img src="../assets/cyanAvatar.png" alt="GIRRARD TIMEO" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <img
+                  src="../assets/cap3.jpg"
+                  alt="GIRRARD TIMEO"
+                  onerror="
+                    this.style.display = 'none';
+                    this.nextElementSibling.style.display = 'flex';
+                  "
+                />
               </div>
               <h3 class="membre-nom">GIRRARD TIMEO</h3>
               <span class="membre-role">Développeur Back-end</span>
-              <p class="membre-bio">Spécialisé dans les architectures logicielles.</p>
+              <p class="membre-bio">
+                Spécialisé dans les architectures logicielles et la gestion de
+                bases de données.
+              </p>
             </div>
           </div>
         </div>
@@ -216,52 +230,107 @@
     </main>
 
     <!-- Footer -->
-        <footer class="footer">
+    <footer class="footer">
       <div class="footer-wave">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-          <path d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z" fill="#a8c6fa" />
+          <path
+            d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"
+            fill="#a8c6fa"
+          />
         </svg>
       </div>
       <div class="footer-content">
         <div class="container">
-          <div class="footer-grid-pro">
-            <div class="footer-col brand-col">
-              <h3 class="footer-logo-text">BrainHack</h3>
-              <p class="footer-tagline">Comprendre l'IA pour mieux la ma&icirc;triser.</p>
+          <div class="footer-grid">
+            <div class="footer-brand">
+              <a href="index.html" class="logo">
+                <div class="logo-icon">
+                  <img
+                    src="../assets/logo.png"
+                    alt="Logo BrainHack"
+                    class="logo-img"
+                  />
+                </div>
+              </a>
             </div>
-            <div class="footer-col nav-col">
+            <div class="footer-links">
               <h4>Navigation</h4>
               <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="games.html">Mini-jeux</a></li>
-                <li><a href="Apropos.html">&Agrave; Propos</a></li>
+                <li><a href="certification.html">Certification</a></li>
+                <li><a href="Apropos.html">À propos</a></li>
               </ul>
             </div>
-            <div class="footer-col legal-col">
-              <h4>L&eacute;gal & Contact</h4>
+            <div class="footer-links">
+              <h4>Contact</h4>
               <ul>
-                <li><a href="mentions-legales.html">Mentions l&eacute;gales</a></li>
-                <li><a href="mentions-legales.html">Confidentialit&eacute;</a></li>
-                <li><a href="mailto:contact@brainhack.fr">Nous contacter</a></li>
+                <li>
+                  <a href="mailto:contact@brainhack.fr">contact@brainhack.fr</a>
+                </li>
+                <li><a href="tel:+33123456789">+33 1 23 45 67 89</a></li>
+                <li><a href="#">Mentions légales</a></li>
               </ul>
+            </div>
+            <div class="footer-newsletter">
+              <h4>Newsletter</h4>
+              <p class="newsletter-desc">
+                Reçois les dernières actus sur l'IA !
+              </p>
+              <div class="newsletter-form">
+                <input
+                  type="email"
+                  class="newsletter-input"
+                  placeholder="Ton email..."
+                />
+                <button class="btn btn-primary newsletter-btn">OK</button>
+              </div>
+              <h4 style="margin-top: 25px">Suivez-nous</h4>
+              <div class="social-links">
+                <a href="#" aria-label="Facebook">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="social-icon"
+                  >
+                    <path
+                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                    />
+                  </svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="social-icon"
+                  >
+                    <path
+                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
-          <div class="footer-divider"></div>
-          <div class="footer-bottom-pro">
+          <div class="footer-bottom">
             <p class="footer-copyright">
-              <a href="kpi_admin.html" class="secret-admin-link">&copy; 2026 BrainHack. Tous droits r&eacute;serv&eacute;s.</a>
+              © 2026 BrainHack. Tous droits réservés.
             </p>
+            <div class="footer-legal">
+              <a href="#">Mentions légales</a>
+              <a href="#">CGU</a>
+              <a href="#">Politique de confidentialité</a>
+            </div>
           </div>
         </div>
       </div>
     </footer>
 
     <script src="../js/script.js"></script>
-    <script src="../js/header-auth.js"></script>
-    <script src="../js/chatbot.js"></script>
-    <div class="mobile-nav-overlay"></div>
+    <script src="../js/Apropos.js"></script>
   </body>
 </html>
+
 
 
 

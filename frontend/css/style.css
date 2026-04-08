@@ -1699,21 +1699,24 @@ body {
 }
 
 .ball-blast-preview {
-    background: linear-gradient(180deg, #0c4a6e 0%, #082f49 100%);
+    background: #231F20;
     position: relative;
     overflow: hidden;
-    width: min(100%, 560px);
-    aspect-ratio: 1 / 1;
-    min-height: 320px;
+    width: 100%;
+    max-width: min(95vw, calc(70vh * (9/10)));
+    aspect-ratio: 9 / 10;
+    min-height: 0;
     margin: 0 auto;
-    border-radius: 16px;
+    border-radius: 12px;
 }
 
 .ball-blast-frame {
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     border: 0;
-    border-radius: 16px;
     display: block;
     background: #0f172a;
     transition: filter 0.25s ease;
@@ -2508,7 +2511,7 @@ body {
 
 .footer-content {
     background: var(--footer-bg);
-    padding: 25px 0 35px; /* réduit le padding */
+    padding: 10px 0 15px; /* réduit considérablement le padding */
 }
 
 .footer-grid {
@@ -3450,6 +3453,12 @@ body {
     pointer-events: none;
 }
 
+/* Ball Blast overlay et bouton Play doivent toujours être cliquables */
+.ball-blast-overlay,
+.ball-blast-play-btn {
+    pointer-events: auto !important;
+}
+
 .auth-section {
     max-width: 450px;
     margin: 0 auto;
@@ -3956,20 +3965,20 @@ body {
     cursor: default !important;
 }
 
-/* Fat Footer Pro Styles */
+/* Fat Footer Pro Styles - Extra Compact version */
 .footer-grid-pro {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 3rem;
-    padding-bottom: 2rem;
-    max-width: 1000px;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 1.5rem;
+    padding-bottom: 0.8rem;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .footer-logo-text {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     background-clip: text;
@@ -3979,13 +3988,14 @@ body {
 .footer-tagline {
     color: var(--text-dark);
     opacity: 0.8;
-    line-height: 1.6;
+    line-height: 1.4;
+    font-size: 0.9rem;
 }
 
 .footer-col h4 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: var(--primary);
 }
 
@@ -3995,7 +4005,7 @@ body {
 }
 
 .footer-col ul li {
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem;
 }
 
 .footer-col ul li a {
@@ -4003,6 +4013,7 @@ body {
     color: var(--text-dark);
     transition: color 0.3s ease;
     opacity: 0.7;
+    font-size: 0.9rem;
 }
 
 .footer-col ul li a:hover {
@@ -4013,7 +4024,7 @@ body {
 .footer-divider {
     height: 1px;
     background: rgba(0,0,0,0.1);
-    margin: 2rem 0;
+    margin: 1rem 0;
 }
 
 .footer-bottom-pro {
