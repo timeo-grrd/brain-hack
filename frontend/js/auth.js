@@ -75,7 +75,7 @@ async function loadAvatars() {
                 
                 const img = document.createElement('img');
                 const nomFichier = a.avatar_url.split('/').pop();
-                img.src = `/hackathon/HackAThon/frontend/assets/${nomFichier}`;
+                img.src = `../assets/${nomFichier}`;
                 img.alt = a.nom;
                 img.style.width = '60px';
                 img.style.height = '60px';

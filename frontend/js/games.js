@@ -1,6 +1,7 @@
 // ============================================
 // GESTION DES MINI-JEUX
 // ============================================
+console.log("🎮 Games.js loaded (v0.1)");
 
 // Données des jeux
 
@@ -201,11 +202,6 @@ function endQuiz() {
     if (window.BrainHackProgress) {
         window.BrainHackProgress.trackMiniGameScore('quiz-ia', quizState.score, quizQuestions.length);
     }
-
-    // Mettre à jour les statistiques utilisateur
-    if (window.currentUser) {
-        updateUserStats('quiz', quizState.score, quizQuestions.length);
-    }
 }
 
 function resetQuiz() {
@@ -310,11 +306,6 @@ function endDetector() {
 
     if (window.BrainHackProgress) {
         window.BrainHackProgress.trackMiniGameScore('detecteur-fake-news', detectState.score, detectStatements.length);
-    }
-
-    // Mettre à jour les statistiques utilisateur
-    if (window.currentUser) {
-        updateUserStats('detecteur', detectState.score, detectStatements.length);
     }
 }
 
@@ -424,11 +415,6 @@ function endDeepfake() {
     if (window.BrainHackProgress) {
         window.BrainHackProgress.trackMiniGameScore('deepfake-check', deepfakeState.score, deepfakeImages.length);
     }
-
-    // Mettre à jour les statistiques utilisateur
-    if (window.currentUser) {
-        updateUserStats('deepfake', deepfakeState.score, deepfakeImages.length);
-    }
 }
 
 function resetDeepfake() {
@@ -453,127 +439,153 @@ document.addEventListener('DOMContentLoaded', function () {
     const aiHistoryCard = document.getElementById('ai-history-card');
     const ballBlastCard = document.getElementById('ball-blast-card');
     const ballBlastSubtitle = document.getElementById('ball-blast-subtitle');
-    const classInfo = getStudentClassInfo();
-    const settings = normalizeGameSettings(classInfo?.gameSettings || null);
 
-    if (!settings.realVsAi.enabled && realVsAiCard) {
-        realVsAiCard.classList.add('game-card-disabled');
+    // Toujours initialiser Ball Blast EN PREMIER, avant tout settings
+    try {
+        initializeBallBlastEmbed();
+        console.log("✅ Ball Blast initialisé avec succès.");
+    } catch (err) {
+        console.error("❌ Échec critique de l'initialisation du jeu:", err);
+    }
+    
+    let settings = null;
+    try {
+        const classInfo = getStudentClassInfo();
+        settings = normalizeGameSettings(classInfo?.gameSettings || null);
+        console.log("📋 Game settings:", JSON.stringify(settings));
+    } catch (err) {
+        console.warn("⚠️ Impossible de charger les paramètres de classe, utilisation des défauts.", err);
+        settings = normalizeGameSettings(null);
     }
 
-    if (!settings.aiHistory.enabled && aiHistoryCard) {
-        aiHistoryCard.classList.add('game-card-disabled');
+    if (settings) {
+        if (!settings.realVsAi.enabled && realVsAiCard) {
+            realVsAiCard.classList.add('game-card-disabled');
+        }
+        if (!settings.aiHistory.enabled && aiHistoryCard) {
+            aiHistoryCard.classList.add('game-card-disabled');
+        }
+        // Ne JAMAIS désactiver Ball Blast — le jeu Unity doit toujours être jouable
+        if (ballBlastSubtitle) {
+            ballBlastSubtitle.textContent = settings.ballBlast.subtitle;
+        }
     }
-
-    if (!settings.ballBlast.enabled && ballBlastCard) {
-        ballBlastCard.classList.add('game-card-disabled');
-    }
-
-    if (ballBlastSubtitle) {
-        ballBlastSubtitle.textContent = settings.ballBlast.subtitle;
-    }
-
-    initializeBallBlastEmbed();
 });
 
 function initializeBallBlastEmbed() {
+    console.log("🛠️ Initialisation de Ball Blast...");
     const frame = document.getElementById('ball-blast-frame');
     const overlay = document.getElementById('ball-blast-overlay');
     const playButton = document.getElementById('ball-blast-play-btn');
 
-    if (!frame || !overlay || !playButton) {
+    if (!playButton) {
+        console.error("❌ Bouton Play introuvable.");
         return;
     }
 
-    const gameSrc = frame.dataset.gameSrc;
-    if (!gameSrc) {
-        return;
-    }
+    let targetFrame = frame;
+    let targetOverlay = overlay;
 
-    if (typeof window.ballBlastLastScore === 'undefined') {
-        window.ballBlastLastScore = null;
+    if (!targetFrame || !targetOverlay) {
+        console.warn("⚠️ Iframe ou Overlay manquant. Création dynamique...");
+        const container = document.querySelector('.ball-blast-preview');
+        if (container) {
+            if (!targetFrame) {
+                targetFrame = document.createElement('iframe');
+                targetFrame.id = 'ball-blast-frame';
+                targetFrame.src = 'about:blank';
+                targetFrame.dataset.gameSrc = "../../python_games/games/ball-blast/index.html";
+                targetFrame.title = "Jeu Ball Blast";
+                targetFrame.className = "ball-blast-frame is-blurred";
+                container.prepend(targetFrame);
+            }
+            if (!targetOverlay) {
+                targetOverlay = document.createElement('div');
+                targetOverlay.id = 'ball-blast-overlay';
+                targetOverlay.className = "ball-blast-overlay";
+                targetOverlay.appendChild(playButton);
+                container.appendChild(targetOverlay);
+            }
+        } else {
+            console.error("❌ Conteneur .ball-blast-preview introuvable. Impossible de lancer le jeu.");
+            return;
+        }
     }
-
-    window.getBallBlastLastScore = function () {
-        return window.ballBlastLastScore;
-    };
 
     let hasStarted = false;
 
     function fitBallBlastToFrame() {
-        if (!hasStarted) {
-            return;
-        }
-
+        if (!hasStarted || !targetFrame) return;
         try {
-            const doc = frame.contentDocument;
+            const doc = targetFrame.contentDocument;
             const canvas = doc?.getElementById('unity-canvas');
-            if (!doc || !canvas) {
-                return;
+            if (doc && canvas) {
+                doc.documentElement.style.width = '100%';
+                doc.documentElement.style.height = '100%';
+                doc.body.style.margin = '0';
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                console.log("📏 Iframe Ball Blast ajustée.");
             }
-
-            doc.documentElement.style.width = '100%';
-            doc.documentElement.style.height = '100%';
-            doc.documentElement.style.overflow = 'hidden';
-
-            doc.body.style.margin = '0';
-            doc.body.style.width = '100%';
-            doc.body.style.height = '100%';
-            doc.body.style.overflow = 'hidden';
-            doc.body.style.transform = 'none';
-
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            canvas.style.display = 'block';
-        } catch (_error) {
-            // Acces impossible si le navigateur traite l'iframe en cross-origin.
-        }
+        } catch (_e) {}
     }
 
     playButton.addEventListener('click', function () {
+        console.log("🖱️ Play cliqué.");
         if (hasStarted) {
-            frame.classList.remove('is-blurred');
-            overlay.style.display = 'none';
+            targetFrame.classList.remove('is-blurred');
+            targetOverlay.style.display = 'none';
+            try { targetFrame.contentWindow?.focus(); } catch (_e) {}
             return;
         }
 
-        hasStarted = true;
-        playButton.disabled = true;
-        playButton.textContent = 'Chargement...';
-        frame.src = gameSrc;
-    });
-
-    frame.addEventListener('load', function () {
-        frame.classList.remove('is-blurred');
-        overlay.style.display = 'none';
-        playButton.disabled = false;
-        playButton.textContent = 'Play';
-        fitBallBlastToFrame();
-
-        try {
-            frame.contentWindow?.focus();
-        } catch (_error) {
-            // Rien a faire si le focus est bloque.
+        const gameSrc = targetFrame.getAttribute('data-game-src') || targetFrame.dataset.gameSrc;
+        if (!gameSrc) {
+            console.error("❌ Aucune source de jeu trouvée.");
+            return;
         }
+
+        playButton.textContent = 'Chargement...';
+        playButton.disabled = true;
+
+        let resolvedSrc = gameSrc;
+        if (typeof API_URL !== 'undefined') {
+            try {
+                const projectRoot = API_URL.replace(/\/backend\/?$/, '');
+                if (projectRoot.startsWith('http')) {
+                    const url = new URL(projectRoot);
+                    const pathPrefix = url.pathname.replace(/\/$/, '');
+                    resolvedSrc = pathPrefix + '/' + gameSrc.replace('../../', '');
+                }
+            } catch (e) {
+                console.warn("⚠️ Erreur résolution chemin:", e);
+            }
+        }
+
+        console.log("🚀 Lancement du jeu :", resolvedSrc);
+        targetFrame.src = resolvedSrc;
+
+        targetFrame.addEventListener('load', function () {
+            console.log("🎮 Jeu chargé.");
+            targetFrame.classList.remove('is-blurred');
+            targetOverlay.style.display = 'none';
+            playButton.disabled = false;
+            playButton.textContent = 'Play';
+            fitBallBlastToFrame();
+            try { targetFrame.contentWindow?.focus(); } catch (_e) {}
+        }, { once: true });
+
+        hasStarted = true;
     });
 
     if (!window.__ballBlastScoreListenerInitialized) {
         window.addEventListener('message', function (event) {
-            const isFromFrame = event.source === frame.contentWindow;
-            const data = event.data;
-            if (!isFromFrame || !data || data.type !== 'BALL_BLAST_SCORE') {
-                return;
-            }
-
-            const numericScore = Number(data.score);
-            if (!Number.isFinite(numericScore)) {
-                return;
-            }
-
-            window.ballBlastLastScore = numericScore;
-            localStorage.setItem('brainhack_ball_blast_last_score', String(numericScore));
-
-            if (window.BrainHackProgress) {
-                window.BrainHackProgress.trackMiniGameScore('ball-blast', numericScore, 1000);
+            if (event.data?.type === 'BALL_BLAST_SCORE') {
+                const score = Number(event.data.score);
+                console.log("🏆 Score Ball Blast reçu:", score);
+                if (window.BrainHackProgress) {
+                    window.BrainHackProgress.trackMiniGameScore('ball-blast', score, 1000);
+                }
             }
         });
         window.__ballBlastScoreListenerInitialized = true;
@@ -584,20 +596,10 @@ function initializeBallBlastEmbed() {
 
 function normalizeGameSettings(rawSettings) {
     const defaults = {
-        realVsAi: {
-            enabled: true,
-            localUrl: 'http://localhost:8501'
-        },
-        aiHistory: {
-            enabled: true,
-            localUrl: 'http://localhost:8502'
-        },
-        ballBlast: {
-            enabled: true,
-            subtitle: 'Ball Blast ludique'
-        }
+        realVsAi: { enabled: true, localUrl: 'http://localhost:8501' },
+        aiHistory: { enabled: true, localUrl: 'http://localhost:8502' },
+        ballBlast: { enabled: true, subtitle: 'Ball Blast ludique' }
     };
-
     const settings = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
     return {
         realVsAi: {
@@ -617,38 +619,22 @@ function normalizeGameSettings(rawSettings) {
 
 function getStudentClassInfo() {
     const currentUser = getCurrentUser();
-    if (!currentUser) {
-        return null;
-    }
-
+    if (!currentUser) return null;
     const studentKey = getProgressUserKey(currentUser);
-    if (!studentKey) {
-        return null;
-    }
-
+    if (!studentKey) return null;
     let classMap = {};
     try {
         const raw = localStorage.getItem('brainhack_teacher_classes_v1');
         const parsed = raw ? JSON.parse(raw) : {};
         classMap = parsed && typeof parsed === 'object' ? parsed : {};
-    } catch (_error) {
-        classMap = {};
-    }
-
+    } catch (_error) { classMap = {}; }
     for (const teacherState of Object.values(classMap)) {
-        if (!teacherState || !Array.isArray(teacherState.classes)) {
-            continue;
-        }
-
+        if (!teacherState || !Array.isArray(teacherState.classes)) continue;
         const matchingClass = teacherState.classes.find(cls =>
             Array.isArray(cls.students) && cls.students.includes(studentKey)
         );
-
-        if (matchingClass) {
-            return matchingClass;
-        }
+        if (matchingClass) return matchingClass;
     }
-
     return null;
 }
 
@@ -657,27 +643,14 @@ function getCurrentUser() {
         const raw = localStorage.getItem('currentUser') || localStorage.getItem('userData');
         const parsed = raw ? JSON.parse(raw) : null;
         return parsed && typeof parsed === 'object' ? parsed : null;
-    } catch (_error) {
-        return null;
-    }
+    } catch (_error) { return null; }
 }
 
 function getProgressUserKey(user) {
-    if (!user || typeof user !== 'object') {
-        return null;
-    }
-
-    if (user.id !== undefined && user.id !== null) {
-        return `id:${user.id}`;
-    }
-    if (user.idCompte) {
-        return `id:${user.idCompte}`;
-    }
-    if (user.email) {
-        return `email:${String(user.email).toLowerCase()}`;
-    }
-    if (user.pseudo) {
-        return `pseudo:${String(user.pseudo).toLowerCase()}`;
-    }
+    if (!user || typeof user !== 'object') return null;
+    if (user.id !== undefined && user.id !== null) return `id:${user.id}`;
+    if (user.idCompte) return `id:${user.idCompte}`;
+    if (user.email) return `email:${String(user.email).toLowerCase()}`;
+    if (user.pseudo) return `pseudo:${String(user.pseudo).toLowerCase()}`;
     return null;
 }

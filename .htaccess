@@ -1,17 +1,17 @@
 RewriteEngine On
 
 # Redirige les appels /api/... vers backend/index.php
-RewriteCond %{REQUEST_URI} ^/api/
+RewriteCond %{REQUEST_URI} api/
 RewriteRule ^api/(.*)$ backend/index.php [QSA,L]
 
 # Ne jamais réécrire les accès à /python_games/ (jeux Unity, etc.)
-RewriteCond %{REQUEST_URI} ^/python_games/
+RewriteCond %{REQUEST_URI} python_games/
 RewriteRule ^python_games/(.*)$ python_games/$1 [L]
 
-# Redirige tout le reste vers frontend/
-RewriteCond %{REQUEST_URI} !^/frontend/
-RewriteCond %{REQUEST_URI} !^/python_games/
+# Redirige tout le reste vers frontend/html/ si pas déjà là
+RewriteCond %{REQUEST_URI} !frontend/
+RewriteCond %{REQUEST_URI} !python_games/
+RewriteCond %{REQUEST_URI} !backend/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond $1 !^frontend/
-RewriteRule ^(.*)$ frontend/$1 [L]
+RewriteRule ^(.*)$ frontend/html/$1 [L]

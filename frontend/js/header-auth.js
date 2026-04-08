@@ -4,10 +4,10 @@
  * Si connecté : remplace les boutons Connexion/Inscription par une icône avatar.
  */
 (function () {
-    const BASE_ASSETS = '/hackathon/HackAThon/frontend/assets/';
-    const COMPTE_URL = '/hackathon/HackAThon/frontend/html/compte.html';
-    const DASHBOARD_URL = '/hackathon/HackAThon/frontend/html/dashboard_prof.html';
-    const LOGIN_URL = '/hackathon/HackAThon/frontend/html/authentification.html?mode=login';
+    const BASE_ASSETS = '../assets/';
+    const COMPTE_URL = 'compte.html';
+    const DASHBOARD_URL = 'dashboard_prof.html';
+    const LOGIN_URL = 'authentification.html?mode=login';
 
     function getUser() {
         try {
@@ -34,8 +34,8 @@
             path = BASE_ASSETS + filename;
         }
         
-        // S'assurer qu'il commence par un /
-        return path.startsWith('/') ? path : '/' + path;
+        // S'assurer qu'il ne commence pas par un / racine si on veut du relatif
+        return path.startsWith('/') && !path.startsWith('/hackathon') ? path.substring(1) : path;
     }
 
     function updateHeader() {

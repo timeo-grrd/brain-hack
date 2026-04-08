@@ -25,7 +25,7 @@
         {
             keywords: ['score', 'classement', 'points', 'xp', 'rang', 'profil', 'dashboard'],
             responses: ["Je t'y emmène immédiatement ! 📊"],
-            action: { redirect: '/hackathon/HackAThon/frontend/html/compte.html', delay: 1500 }
+            action: { redirect: '/frontend/html/compte.html', delay: 1500 }
         },
         {
             keywords: ['aide', 'comment', 'help', 'quoi', 'quoi faire'],
@@ -38,7 +38,7 @@
         {
             keywords: ['jeu', 'mini-jeu', 'game', 'jouer', 'jeux', 'joue', 'jouer'],
             responses: ["Je t'y emmène immédiatement ! 🎮 Accroche-toi, les mini-jeux arrivent !"],
-            action: { redirect: '/hackathon/HackAThon/frontend/html/games.html', delay: 1500 }
+            action: { redirect: '/frontend/html/games.html', delay: 1500 }
         },
         {
             keywords: ['article', 'lire', 'contenu', 'apprendre'],

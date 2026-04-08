@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nos mini-jeux - BrainHack</title>
     <link rel="icon" type="image/png" href="../assets/logo.png" />
-    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/style.css?v=0.2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -61,7 +61,7 @@
           </div>
         </div>
 
-                <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
+        <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
 
         <div class="nav-actions">
           <a
@@ -178,16 +178,68 @@
             <iframe
               id="ball-blast-frame"
               src="about:blank"
-              data-game-src="/hackathon/HackAThon/python_games/games/ball-blast/index.html"
+              data-game-src="../../python_games/games/ball-blast/index.html"
               title="Jeu Ball Blast"
               loading="lazy"
               class="ball-blast-frame is-blurred"
+              allow="autoplay; fullscreen"
             ></iframe>
-            <div id="ball-blast-overlay" class="ball-blast-overlay">
-              <button id="ball-blast-play-btn" class="ball-blast-play-btn">Play</button>
+            <div id="ball-blast-overlay" class="ball-blast-overlay" style="pointer-events: auto;">
+              <button id="ball-blast-play-btn" class="ball-blast-play-btn" style="pointer-events: auto;" onclick="window.__launchBallBlast && window.__launchBallBlast()">Play</button>
             </div>
           </div>
         </div>
+        <script>
+          // Lancement direct Ball Blast — fallback inline
+          (function() {
+            var launched = false;
+            window.__launchBallBlast = function() {
+              console.log("🖱️ Play cliqué (inline handler).");
+              var frame = document.getElementById('ball-blast-frame');
+              var overlay = document.getElementById('ball-blast-overlay');
+              var btn = document.getElementById('ball-blast-play-btn');
+              if (!frame) { console.error("❌ Iframe introuvable."); return; }
+
+              if (launched) {
+                frame.classList.remove('is-blurred');
+                if (overlay) overlay.style.display = 'none';
+                try { frame.contentWindow.focus(); } catch(e) {}
+                return;
+              }
+
+              var gameSrc = frame.getAttribute('data-game-src');
+              if (!gameSrc) { console.error("❌ Aucune source de jeu trouvée."); return; }
+
+              if (btn) { btn.textContent = 'Chargement...'; btn.disabled = true; }
+
+              // Résolution du chemin
+              var resolvedSrc = gameSrc;
+              if (typeof API_URL !== 'undefined') {
+                try {
+                  var projectRoot = API_URL.replace(/\/backend\/?$/, '');
+                  if (projectRoot.indexOf('http') === 0) {
+                    var url = new URL(projectRoot);
+                    var pathPrefix = url.pathname.replace(/\/$/, '');
+                    resolvedSrc = pathPrefix + '/' + gameSrc.replace('../../', '');
+                  }
+                } catch(e) { console.warn("⚠️ Erreur résolution chemin:", e); }
+              }
+
+              console.log("🚀 Lancement du jeu :", resolvedSrc);
+              frame.src = resolvedSrc;
+
+              frame.addEventListener('load', function() {
+                console.log("🎮 Jeu chargé.");
+                frame.classList.remove('is-blurred');
+                if (overlay) overlay.style.display = 'none';
+                if (btn) { btn.disabled = false; btn.textContent = 'Play'; }
+                try { frame.contentWindow.focus(); } catch(e) {}
+              }, { once: true });
+
+              launched = true;
+            };
+          })();
+        </script>
       </div>
     </section>
 
@@ -232,11 +284,32 @@
       </div>
     </footer>
 
-    <script src="../js/script.js"></script>
-    <script src="../js/games.js"></script>
-    <script src="../js/header-auth.js"></script>
-    <script src="../js/chatbot.js"></script>
+    <script src="../js/header-auth.js?v=0.1"></script>
+    <script src="../js/config.js?v=0.1"></script>
+    <script src="../js/script.js?v=0.1"></script>
+    <script src="../js/games.js?v=0.2"></script>
+    <script src="../js/chatbot.js?v=0.1"></script>
     <div class="mobile-nav-overlay"></div>
+    <script>
+      // Diagnostic script to check Ball Blast DOM presence
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const frame = document.getElementById('ball-blast-frame');
+          const overlay = document.getElementById('ball-blast-overlay');
+          const playButton = document.getElementById('ball-blast-play-btn');
+          console.group("🧩 Ball Blast Diagnostic");
+          console.log("URL:", window.location.href);
+          console.log("Iframe (#ball-blast-frame):", frame ? "Vérifié ✅" : "MANQUANT ❌");
+          console.log("Overlay (#ball-blast-overlay):", overlay ? "Vérifié ✅" : "MANQUANT ❌");
+          console.log("Play Button (#ball-blast-play-btn):", playButton ? "Vérifié ✅" : "MANQUANT ❌");
+          if (!frame) {
+              const preview = document.querySelector('.ball-blast-preview');
+              console.log("Container .ball-blast-preview content:", preview ? preview.innerHTML.trim().slice(0, 500) : "Conteneur non trouvé");
+          }
+          console.groupEnd();
+        }, 1500);
+      });
+    </script>
   </body>
 </html>
 

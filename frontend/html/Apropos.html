@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
@@ -29,18 +29,49 @@
             />
           </div>
         </a>
+
         <div class="nav-links">
+          <div class="close-btn">×</div>
+          <!-- XP Counter mobile -->
+          <span class="header-xp-display" style="display:none;" id="mobile-xp-display">⚡ XP : <strong id="header-xp-counter-mobile">0</strong></span>
           <a href="index.html" class="nav-link">Accueil</a>
           <a href="games.html" class="nav-link">Mini-jeux</a>
-          <a href="../api_ia/api-ia-bouton.html" class="nav-link"
-            >Vérifier une image</a
-          >
-          <a href="Apropos.html" class="nav-link active">À propos</a>
+          <a href="Apropos.html" class="nav-link">À propos</a>
+          
+          <div class="nav-dropdown">
+            <a href="#" class="nav-link dropdown-toggle">Vérificateur d'IA</a>
+            <div class="dropdown-menu">
+              <a href="verify_text.html" class="dropdown-item">Vérifier un texte</a>
+              <a href="../api_ia/api-ia-bouton.html" class="dropdown-item">Vérifier une image</a>
+              <a href="verify_video.html" class="dropdown-item">Vérifier une vidéo</a>
+              <a href="verify_audio.html" class="dropdown-item">Vérifier un son</a>
+            </div>
+          </div>
+          <div class="theme-wrapper" style="display:inline-flex; align-items:center; position:relative; padding:0; margin:0;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:0; pointer-events:none; color: var(--text-dark);">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+            <select class="theme-selector" style="appearance:none; -webkit-appearance:none; background:transparent; border:none; outline:none; color:var(--text-dark); font-family:inherit; font-weight:400; font-size:1rem; cursor:pointer; padding-left:24px; padding-right:16px;">
+              <option value="normal">Thème : Normal</option>
+              <option value="protanopia">Thème : Protanopie</option>
+              <option value="deuteranopia">Thème : Deutéranopie</option>
+              <option value="tritanopia">Thème : Tritanopie</option>
+            </select>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="position:absolute; right:0; pointer-events:none; color: var(--text-dark);">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
         </div>
+
+        <span class="header-xp-display">⚡ Total XP : <strong id="header-xp-counter">0</strong> XP</span>
+
         <div class="nav-actions">
-          <a href="authentification.html?mode=login" class="btn-outline-nav"
-            >Connexion</a
+          <a
+            href="authentification.html?mode=login"
+            class="btn btn-outline-nav"
           >
+            Connexion
+          </a>
           <a href="authentification.html?mode=register" class="btn btn-primary">
             <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
               <path
@@ -52,11 +83,12 @@
             S'inscrire
           </a>
         </div>
-        <button class="mobile-menu-btn" aria-label="Menu">
+
+        <div class="burger-icon">
           <span></span>
           <span></span>
           <span></span>
-        </button>
+        </div>
       </div>
     </nav>
 
@@ -159,12 +191,8 @@
             <div class="membre-card">
               <div class="membre-photo">
                 <img
-                  src="../assets/cap1.jpg"
+                  src="../assets/purpleAvatar.png"
                   alt="BARRAUD TEDDY"
-                  onerror="
-                    this.style.display = 'none';
-                    this.nextElementSibling.style.display = 'flex';
-                  "
                 />
               </div>
               <h3 class="membre-nom">BARRAUD TEDDY</h3>
@@ -174,14 +202,9 @@
             <div class="membre-card">
               <div class="membre-photo">
                 <img
-                  src="../assets/femme.jpg"
+                  src="../assets/pinkAvatar.png"
                   alt="KELVYA ALANDJI"
-                  onerror="
-                    this.style.display = 'none';
-                    this.nextElementSibling.style.display = 'flex';
-                  "
                 />
-                <div class="membre-avatar-fallback">?</div>
               </div>
               <h3 class="membre-nom">KELVYA ALANDJI</h3>
               <span class="membre-role">Développeur Front-end</span>
@@ -192,12 +215,8 @@
             <div class="membre-card">
               <div class="membre-photo">
                 <img
-                  src="../assets/cap2.jpg"
+                  src="../assets/blueAvatar.png"
                   alt="POISSON LUDWIG"
-                  onerror="
-                    this.style.display = 'none';
-                    this.nextElementSibling.style.display = 'flex';
-                  "
                 />
               </div>
               <h3 class="membre-nom">POISSON LUDWIG</h3>
@@ -209,12 +228,8 @@
             <div class="membre-card">
               <div class="membre-photo">
                 <img
-                  src="../assets/cap3.jpg"
+                  src="../assets/greenAvatar.png"
                   alt="GIRRARD TIMEO"
-                  onerror="
-                    this.style.display = 'none';
-                    this.nextElementSibling.style.display = 'flex';
-                  "
                 />
               </div>
               <h3 class="membre-nom">GIRRARD TIMEO</h3>

@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (!avatarUrl) {
-            if (image) image.src = '/hackathon/HackAThon/frontend/assets/logo.png';
+            if (image) image.src = '/frontend/assets/logo.png';
             return;
         }
 
@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const nomFichier = avatarUrl.split('/').pop();
-        image.src = '/hackathon/HackAThon/frontend/assets/' + nomFichier;
+        image.src = '../assets/' + nomFichier;
         image.style.objectFit = 'cover';
         image.style.width = '100%';
         image.style.height = '100%';

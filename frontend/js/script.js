@@ -11,22 +11,26 @@ let userXP = 0;
 async function updateHeaderXP() {
     try {
         const response = await fetch('api_xp.php?action=get_xp');
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.warn('XP Sync: Session non authentifiée (401).');
+            } else {
+                console.warn(`XP Sync: Erreur HTTP ${response.status}`);
+            }
+            return;
+        }
         const data = await response.json();
         
         if (data && data.total_xp !== undefined) {
             const xp = data.total_xp || 0;
-            
-            // Desktop & Mobile counters
             const counters = document.querySelectorAll('#header-xp-counter, #header-xp-counter-mobile');
             counters.forEach(el => { el.textContent = xp; });
 
-            // Stats page display
             const xpDisplay = document.getElementById('total-xp-display');
             if (xpDisplay) xpDisplay.textContent = '🏆 Total XP en base : ' + xp;
         }
     } catch (err) { 
-        // Silently fail if API not found (e.g. on pages in subdirectories)
-        console.warn('Sync XP non disponible sur cette page.'); 
+        console.warn('XP Sync: Service temporairement indisponible.'); 
     }
 }
 
@@ -496,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isConnected) {
             const connectedUser = getConnectedUser();
             const isProfessor = connectedUser && (connectedUser.role || '').toLowerCase() === 'teacher';
-            const accountPath = isProfessor ? '/hackathon/HackAThon/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
+            const accountPath = isProfessor ? '/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
             
             authContainer.appendChild(createMobileLink(isProfessor ? 'Mon Dashboard' : 'Mon compte', accountPath, true));
             
@@ -533,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const links = navActions.querySelectorAll('a');
         const displayName = connectedUser.name || connectedUser.pseudo || 'Utilisateur';
         const isProfessor = (connectedUser.role || '').toLowerCase() === 'teacher';
-        const accountPath = isProfessor ? '/hackathon/HackAThon/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
+        const accountPath = isProfessor ? '/frontend/html/dashboard_prof.html' : getHeaderAccountPath();
         if (links[0]) {
             links[0].href = accountPath;
             links[0].textContent = isProfessor ? 'Mon Dashboard' : 'Mon compte';
