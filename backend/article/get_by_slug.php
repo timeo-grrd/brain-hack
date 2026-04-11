@@ -13,6 +13,24 @@ if (preg_match('#/article/([a-zA-Z0-9\-_]+)#', $uri, $matches)) {
     exit;
 }
 
+if ($slug === 'ia-featured-card') {
+    session_start();
+    $suffix = '65'; // default
+    if (isset($_SESSION['user_id'])) {
+        $stmtU = $pdo->prepare('SELECT classes.nom_groupe FROM users LEFT JOIN classes ON users.id_classe = classes.id WHERE users.id = ?');
+        $stmtU->execute([$_SESSION['user_id']]);
+        $userC = $stmtU->fetch();
+        if ($userC && $userC['nom_groupe']) {
+            switch ($userC['nom_groupe']) {
+                case '4ème-3ème': $suffix = '43'; break;
+                case 'Seconde-Première': $suffix = 'sp'; break;
+                case 'Terminale': $suffix = 'ter'; break;
+            }
+        }
+    }
+    $slug = 'ia-featured-card-' . $suffix;
+}
+
 $stmt = $pdo->prepare('SELECT * FROM articles WHERE slug = ?');
 $stmt->execute([$slug]);
 $article = $stmt->fetch();

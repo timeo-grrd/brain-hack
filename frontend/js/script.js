@@ -79,168 +79,7 @@ window.checkAnswer = async function(questionNumber, isCorrect, btnElement) {
 
 // ── Zoom Card IA Modal Logic (Phase 11) ──────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    const teaserCard = document.getElementById('open-ia-modal');
-    const overlay    = document.getElementById('ia-modal-overlay');
-    const closeBtn   = overlay ? overlay.querySelector('.close-modal-btn') : null;
-
-    if (teaserCard && overlay) {
-        teaserCard.addEventListener('click', () => {
-            overlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-
-            // Appliquer le badge "Lu" au clic
-            if (window.BrainHackProgress) {
-                window.BrainHackProgress.trackArticleRead('ia-featured-card');
-                const badge = teaserCard.querySelector('.badge-status');
-                if (badge) {
-                    badge.textContent = 'Lu';
-                    badge.style.backgroundColor = '#4caf50';
-                    badge.style.color = 'white';
-                }
-            }
-
-            // Charger les interactions (Likes & Commentaires)
-            loadIAInteractions();
-        });
-
-        const closeModal = () => {
-            overlay.style.display = 'none';
-            document.body.style.overflow = '';
-        };
-
-        if (closeBtn) closeBtn.addEventListener('click', closeModal);
-
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && overlay.style.display === 'flex') {
-                closeModal();
-            }
-        });
-
-        // --- Logic: Likes ---
-        const btnLike = document.getElementById('btn-like-ia');
-        if (btnLike) {
-            btnLike.addEventListener('click', async () => {
-                try {
-                    const response = await fetch('api_interactions.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'like', article_id: 'ia-featured-card' })
-                    });
-                    const data = await response.json();
-                    if (data.status) {
-                        document.getElementById('like-count-ia').textContent = data.total;
-                        btnLike.classList.toggle('liked', data.status === 'liked');
-                    } else if (data.error) {
-                        alert(data.error);
-                    }
-                } catch (err) { console.error('Erreur Like:', err); }
-            });
-        }
-
-        // --- Logic: Comments ---
-        const btnComment = document.getElementById('btn-submit-comment');
-        const commentText = document.getElementById('new-comment-text');
-        if (btnComment && commentText) {
-            btnComment.addEventListener('click', async () => {
-                const text = commentText.value.trim();
-                if (!text) return;
-
-                try {
-                    const response = await fetch('api_interactions.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'comment', article_id: 'ia-featured-card', text: text })
-                    });
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        commentText.value = '';
-                        addCommentToUI(data.comment, true);
-                        updateCommentCount(1);
-                        
-                        // Scroll to the new comment
-                        const list = document.getElementById('comments-list');
-                        list.firstChild.scrollIntoView({ behavior: 'smooth' });
-                    } else if (data.error) {
-                        alert(data.error);
-                    }
-                } catch (err) { console.error('Erreur Comment:', err); }
-            });
-        }
-    }
-
-    async function loadIAInteractions() {
-        try {
-            // Utilisation de query param pour le GET
-            const response = await fetch('api_interactions.php?article_id=ia-featured-card');
-            const data = await response.json();
-            
-            // Update counts
-            const likeEl = document.getElementById('like-count-ia');
-            if (likeEl) likeEl.textContent = data.likes || 0;
-            
-            const commentCount = data.comments ? data.comments.length : 0;
-            updateCommentCount(null, commentCount);
-
-            // Populate list
-            const list = document.getElementById('comments-list');
-            const noMsg = document.getElementById('no-comments-msg');
-            list.innerHTML = ''; 
-            if (noMsg) list.appendChild(noMsg);
-
-            if (data.comments && data.comments.length > 0) {
-                if (noMsg) noMsg.style.display = 'none';
-                data.comments.forEach(c => addCommentToUI(c));
-            } else {
-                if (noMsg) noMsg.style.display = 'block';
-            }
-        } catch (err) { console.error('Erreur Load:', err); }
-    }
-
-    function addCommentToUI(comment, prepend = false) {
-        const list = document.getElementById('comments-list');
-        const div = document.createElement('div');
-        div.className = 'comment-item';
-        
-        const dateStr = new Date(comment.created_at).toLocaleDateString('fr-FR', {
-            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-        });
-
-        div.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author">
-                    ${comment.pseudo} 
-                    <span class="comment-date">${dateStr}</span>
-                </span>
-                ${isAdmin() ? `<button class="delete-comment-btn" onclick="deleteComment(${comment.id}, this)">🗑️ Supprimer</button>` : ''}
-            </div>
-            <div class="comment-text">${comment.comment_text}</div>
-        `;
-
-        if (prepend) {
-            const noMsg = document.getElementById('no-comments-msg');
-            if (noMsg) noMsg.style.display = 'none';
-            list.prepend(div);
-        } else {
-            list.appendChild(div);
-        }
-    }
-
-    function updateCommentCount(delta, fixedValue = null) {
-        const spanMain = document.getElementById('comment-count-ia');
-        const spanHeader = document.getElementById('comment-count-ia-header');
-        
-        if (!spanMain && fixedValue === null) return;
-        
-        let current = fixedValue !== null ? fixedValue : parseInt(spanMain ? spanMain.textContent || "0" : "0");
-        if (delta !== null && fixedValue === null) current += delta;
-
-        if (spanMain) spanMain.textContent = current;
-        if (spanHeader) spanHeader.textContent = current;
-    }
+// Legacy static IA modal logic has been removed. Dynamic openModal is used instead.
 
     function isAdmin() {
         try {
@@ -269,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial load of XP
     updateHeaderXP();
+
+
+
 });
 
 
@@ -643,6 +485,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         <p>${section.content}</p>
                     </section>`;
 
+            case 'quiz':
+                return `
+                    <section class="ia-section ia-quiz" style="margin-top: 30px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                        <h3>${section.title}</h3>
+                        ${section.questions.map(q => `
+                            <div class="quiz-question" data-question="${q.id}" style="margin-top: 20px;">
+                                <p class="quiz-question-label"><strong>${q.label}</strong></p>
+                                <div class="quiz-options">
+                                    ${q.options.map(opt => `
+                                        <button class="quiz-btn" onclick="event.stopPropagation(); window.checkAnswer('${q.id}', ${opt.isCorrect}, this)">${opt.label}</button>
+                                    `).join('')}
+                                </div>
+                                <p class="quiz-feedback" id="feedback-${q.id}" style="font-weight: bold; margin-top: 10px;"></p>
+                            </div>
+                        `).join('')}
+                    </section>`;
+
             default:
                 return '';
         }
@@ -651,6 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Modale dynamique ─────────────────────────────────────────────────────
 
+    window.openModal = openModal;
     async function openModal(articleId) {
         document.querySelector('.ia-modal-overlay')?.remove();
 
@@ -1179,9 +1039,26 @@ function commentHTML(comment) {
                 // Génération des cartes
                 articles.forEach((article, index) => {
                     // On exclut la grosse carte vedette pour ne pas la dupliquer en dur
-                    if (article.slug === 'ia-featured-card') return;
+                    if (article.slug === 'cest-quoi-lia') return;
 
-                    const imgSrc = fallbackImages[article.slug] || 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=300&fit=crop';
+                    let baseSlug = article.slug;
+                    if (baseSlug.match(/-(65|43|sp|ter)$/)) {
+                        baseSlug = baseSlug.substring(0, baseSlug.lastIndexOf('-'));
+                    }
+
+                    const dynamicImages = {
+                        'ia-featured-card': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop', // Téléphone
+                        'ia-hallucinations': 'https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=400&h=300&fit=crop', // Illusion/Menteur
+                        'ia-manipulation': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',  // Bulle filtres/TikTok
+                        'ia-detective': 'https://images.unsplash.com/photo-1658428805213-9aa765c9c9b6?w=400&h=300&fit=crop', // Loupe/Détective IA
+                        'ia-gaming': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop', // Gaming/Manette
+                        'ia-usurpation': 'https://images.unsplash.com/photo-1563207153-f4081c7ba19f?w=400&h=300&fit=crop', // Hacker/Usurpateur
+                        'ia-school': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=300&fit=crop' // École/Devoirs/Carnet
+                    };
+
+                    const imgSrc = dynamicImages[baseSlug] || fallbackImages[article.slug] || 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=300&fit=crop';
+                    
+                    const levelSuffix = article.nom_groupe ? `<br><small style="font-weight: 500; color: var(--primary);">Niveau ${article.nom_groupe}</small>` : '';
                     
                     const el = document.createElement('article');
                     el.className = 'article-card';
@@ -1191,7 +1068,7 @@ function commentHTML(comment) {
                           <img src="${imgSrc}" alt="${article.title}" class="loaded" />
                         </div>
                         <div class="article-content">
-                          <h3 class="article-title">${article.title}</h3>
+                          <h3 class="article-title" style="margin-bottom: 0.5rem;">${article.title} ${levelSuffix}</h3>
                           <div class="article-stats">
                             <span class="stat">
                               <svg class="icon-stat"><use href="#icon-heart"></use></svg>
